@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heavenly Music Stamp</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Nanum+Myeongjo:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#C9A84C;--gold-light:#E8C97A;--gold-dim:rgba(201,168,76,0.15);
+  --navy:#000000;--navy-mid:#0A0A0A;--navy-light:#111111;
+  --cream:#F0E8D5;--text:#C5BAA5;--muted:#68798F;
+  --border:rgba(201,168,76,0.22);--green:#5CC98A;--r:12px
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--navy);color:var(--text);font-family:'Nanum Myeongjo',serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:none;pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:0 16px 80px}
+header{text-align:center;padding:44px 0 28px;border-bottom:1px solid var(--border)}
+.hdr-sub{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.28em;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+.logo-kr{font-family:'Nanum Myeongjo',serif;font-weight:600;font-size:clamp(2rem,9vw,3.6rem);color:var(--cream);line-height:1}
+.logo-en{font-family:'Cormorant Garamond',serif;font-weight:300;font-style:italic;font-size:clamp(2rem,9vw,3.6rem);color:var(--gold);margin-left:8px;line-height:1}
+.tagline{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.75}
+.hdr-div{display:flex;align-items:center;gap:12px;margin:18px auto 0;max-width:280px}
+.hdr-div::before,.hdr-div::after{content:'';flex:1;height:1px;background:var(--border)}
+.hdr-div span{color:var(--gold);font-size:15px}
+.api-card{background:var(--navy-mid);border:1px solid var(--border);border-radius:var(--r);padding:20px 18px;margin:22px 0 0}
+.api-card-title{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.16em;color:var(--gold);text-transform:uppercase;margin-bottom:13px}
+.api-row{display:flex;gap:8px;align-items:center}
+.api-input{flex:1;padding:10px 13px;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:var(--cream);font-family:'Space Mono',monospace;font-size:13px;outline:none;transition:border-color .2s}
+.api-input:focus{border-color:var(--gold)}
+.eye-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:15px;padding:0 3px;transition:color .2s}
+.eye-btn:hover{color:var(--gold)}
+.btn-save{padding:10px 18px;background:var(--gold);color:var(--navy);border:none;border-radius:8px;font-family:'Nanum Myeongjo',serif;font-weight:600;font-size:13px;cursor:pointer;transition:background .2s;white-space:nowrap}
+.btn-save:hover{background:var(--gold-light)}
+.api-status{font-size:11.5px;margin-top:8px;color:var(--muted);min-height:16px}
+.api-status.ok{color:var(--green)}
+.api-note{font-size:11.5px;color:var(--muted);margin-top:8px;line-height:1.7}
+.api-note a{color:var(--gold);text-decoration:none}
+.api-note a:hover{text-decoration:underline}
+.tabs{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:20px 0 18px}
+.tab-btn{flex:1;padding:13px 8px;background:transparent;border:none;border-right:1px solid var(--border);cursor:pointer;font-family:'Nanum Myeongjo',serif;font-size:13px;color:var(--muted);transition:all .22s}
+.tab-btn:last-child{border-right:none}
+.tab-btn.active{background:var(--gold-dim);color:var(--gold-light)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,0.03)}
+.panel{display:none}
+.panel.active{display:block;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--navy-mid);border:1px solid var(--border);border-radius:var(--r);padding:20px 18px;margin-bottom:14px}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.step-badge{width:24px;height:24px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);flex-shrink:0}
+.card-head-title{font-size:14.5px;font-weight:600;color:var(--cream)}
+.date-bar{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:12px 0 4px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--muted);letter-spacing:.07em}
+.date-bar span{display:flex;align-items:center;gap:5px}
+/* ── 주제 추천 카드 ── */
+.theme-card{background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;padding:16px 18px;cursor:pointer;transition:all .22s;position:relative}
+.theme-card:hover{border-color:var(--gold);background:rgba(201,168,76,0.08)}
+.theme-card.active{border-color:var(--gold);background:rgba(201,168,76,0.12)}
+.theme-card-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:6px;letter-spacing:.1em}
+.theme-card-title{font-size:15px;font-weight:700;color:var(--cream);margin-bottom:6px}
+.theme-card-desc{font-size:12.5px;color:var(--muted);line-height:1.75;margin-bottom:10px}
+.theme-card-badges{display:flex;gap:6px;flex-wrap:wrap}
+.theme-card-badge{padding:3px 10px;border:1px solid var(--border);border-radius:20px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted)}
+.theme-card-badge.mood{border-color:var(--gold);color:var(--gold-light)}
+.theme-card-select{position:absolute;top:14px;right:14px;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);background:var(--navy);transition:all .2s}
+.theme-card.active .theme-card-select{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+.theme-selected-box{background:var(--navy);border:1px solid var(--gold);border-radius:8px;padding:12px 14px;margin-bottom:4px}
+.theme-selected-label{font-family:'Space Mono',monospace;font-size:9.5px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px}
+.theme-selected-title{font-size:14px;color:var(--gold-light);font-weight:700;margin-bottom:4px}
+.theme-selected-desc{font-size:12px;color:var(--text);line-height:1.7}
+.theme-genre-grid{grid-template-columns:repeat(3,1fr) !important}
+/* ── 주제 추천 ── */
+.recommend-btn{width:100%;padding:14px;background:transparent;border:1px solid var(--gold);border-radius:8px;color:var(--gold-light);font-family:'Nanum Myeongjo',serif;font-size:13.5px;cursor:pointer;transition:all .22s;display:flex;align-items:center;justify-content:center;gap:8px}
+.recommend-btn:hover{background:var(--gold-dim)}
+.recommend-btn:disabled{opacity:.5;cursor:not-allowed}
+.result-box{margin-top:16px;background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:18px;display:none}
+.result-box.visible{display:block;animation:fadeUp .3s ease}
+.result-box h3{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--gold-light);margin-bottom:8px;font-style:italic}
+.result-box p{font-size:13.5px;line-height:1.9;color:var(--text)}
+.result-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.badge{padding:3px 11px;border:1px solid var(--border);border-radius:20px;font-size:10.5px;color:var(--muted);font-family:'Space Mono',monospace}
+.source-toggle{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px}
+.src-btn{flex:1;padding:10px 8px;background:transparent;border:none;border-right:1px solid var(--border);cursor:pointer;font-family:'Nanum Myeongjo',serif;font-size:12.5px;color:var(--muted);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.src-btn:last-child{border-right:none}
+.src-btn.active{background:var(--gold-dim);color:var(--gold-light)}
+.src-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,0.03)}
+.upload-zone{border:1.5px dashed var(--border);border-radius:10px;padding:30px 16px;text-align:center;cursor:pointer;transition:all .22s;background:var(--navy)}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--gold);background:var(--gold-dim)}
+.upload-icon{font-size:32px;margin-bottom:10px}
+.upload-main{font-size:13.5px;color:var(--text);margin-bottom:5px}
+.upload-sub{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.08em}
+.upload-input{display:none}
+.yt-input-row{display:flex;gap:8px}
+.yt-input{flex:1;padding:11px 13px;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:var(--cream);font-family:'Space Mono',monospace;font-size:12px;outline:none;transition:border-color .2s}
+.yt-input:focus{border-color:var(--gold)}
+.yt-load-btn{padding:11px 16px;background:var(--gold);color:var(--navy);border:none;border-radius:8px;font-family:'Nanum Myeongjo',serif;font-weight:600;font-size:13px;cursor:pointer;transition:background .2s;white-space:nowrap}
+.yt-load-btn:hover{background:var(--gold-light)}
+.yt-load-btn:disabled{opacity:.5;cursor:not-allowed}
+.yt-info{display:none;background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-top:12px;gap:12px;align-items:center}
+.yt-info.visible{display:flex;animation:fadeUp .3s ease}
+.yt-thumb{width:60px;height:44px;object-fit:cover;border-radius:5px;flex-shrink:0}
+.yt-meta{flex:1;min-width:0}
+.yt-title-text{font-size:13px;color:var(--cream);font-weight:600;line-height:1.4;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.yt-detail{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--muted)}
+.yt-remove{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;flex-shrink:0;transition:color .2s}
+.yt-remove:hover{color:#e06c75}
+.yt-player-wrap{display:none;margin-top:12px;border-radius:10px;overflow:hidden;position:relative;padding-bottom:56.25%;height:0}
+.yt-player-wrap.visible{display:block;animation:fadeUp .3s ease}
+.yt-player-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+.file-info{display:none;align-items:center;gap:12px;background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-top:12px}
+.file-info.visible{display:flex;animation:fadeUp .3s ease}
+.file-icon{font-size:22px;flex-shrink:0}
+.file-meta{flex:1}
+.file-name{font-size:13px;color:var(--cream);font-weight:600;word-break:break-all}
+.file-size{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:3px}
+.file-remove{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;flex-shrink:0;transition:color .2s}
+.file-remove:hover{color:#e06c75}
+.player-wrap{display:none;background:#ECEAE4;border-radius:50px;padding:11px 16px;margin-top:12px;align-items:center;gap:10px}
+.player-wrap.visible{display:flex;animation:fadeUp .3s ease}
+.play-btn{width:34px;height:34px;flex-shrink:0;background:#1a1a2e;border:none;border-radius:50%;color:#ECEAE4;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.play-btn:hover{transform:scale(1.08)}
+.player-time{font-family:'Space Mono',monospace;font-size:11px;color:#555;white-space:nowrap;flex-shrink:0}
+.progress-wrap{flex:1;position:relative;height:4px;background:#ccc8c0;border-radius:2px;cursor:pointer}
+.progress-fill{height:100%;border-radius:2px;background:#1a1a2e;width:0%;transition:width .1s linear}
+.vol-btn{background:none;border:none;font-size:15px;cursor:pointer;flex-shrink:0;color:#555;transition:color .2s}
+.vol-btn:hover{color:#1a1a2e}
+.lyrics-textarea{width:100%;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:var(--cream);font-family:'Nanum Myeongjo',serif;font-size:13.5px;outline:none;transition:border-color .2s;padding:12px 14px;resize:vertical;min-height:140px;line-height:1.85}
+.lyrics-textarea:focus{border-color:var(--gold)}
+.lyrics-hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.7;display:flex;align-items:flex-start;gap:6px}
+.marker-btn{width:100%;padding:10px;background:var(--navy-light);border:1px dashed var(--border);border-radius:6px;color:var(--muted);font-family:'Nanum Myeongjo',serif;font-size:12.5px;cursor:pointer;transition:all .2s;margin-top:8px}
+.marker-btn:hover{border-color:var(--gold);color:var(--gold-light)}
+.markers-list{margin-top:8px;display:flex;flex-direction:column;gap:5px}
+.marker-item{display:flex;align-items:center;gap:9px;background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:7px 11px}
+.marker-time{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--gold);flex-shrink:0;min-width:42px;cursor:pointer}
+.marker-time:hover{text-decoration:underline}
+.marker-label{flex:1;background:transparent;border:none;color:var(--text);font-family:'Nanum Myeongjo',serif;font-size:13px;outline:none}
+.marker-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;transition:color .2s}
+.marker-del:hover{color:#e06c75}
+.field-label{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:6px;display:block}
+.field-input{width:100%;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:var(--cream);font-family:'Nanum Myeongjo',serif;font-size:13.5px;outline:none;transition:border-color .2s;padding:10px 13px}
+.field-input:focus{border-color:var(--gold)}
+.ts-form{display:flex;flex-direction:column;gap:13px}
+.ts-btn{width:100%;padding:15px;background:transparent;border:1px solid var(--gold);border-radius:8px;color:var(--gold-light);font-family:'Nanum Myeongjo',serif;font-size:14px;cursor:pointer;transition:all .22s;display:flex;align-items:center;justify-content:center;gap:8px}
+.ts-btn:hover{background:var(--gold-dim)}
+.ts-btn:disabled{opacity:.5;cursor:not-allowed}
+.ts-output{background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:18px;font-family:'Space Mono',monospace;font-size:12.5px;line-height:1.95;color:var(--text);white-space:pre-wrap;display:none;position:relative}
+.ts-output.visible{display:block;animation:fadeUp .3s ease}
+.copy-btn{position:absolute;top:11px;right:11px;background:var(--navy-light);border:1px solid var(--border);border-radius:5px;color:var(--muted);font-size:11px;padding:4px 11px;cursor:pointer;transition:all .2s;font-family:'Space Mono',monospace}
+.copy-btn:hover{color:var(--gold);border-color:var(--gold)}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ai-hint{font-size:11.5px;color:var(--green);margin-top:8px;display:none}
+.ai-hint.visible{display:block}
+/* ── 레퍼런스 ── */
+.ref-step-loading{font-size:12.5px;color:var(--muted);padding:10px 0;display:flex;align-items:center;gap:8px}
+.ref-breadcrumb{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--gold);letter-spacing:.08em;margin-bottom:12px;padding:6px 12px;background:var(--navy);border-radius:6px;border-left:3px solid var(--gold)}
+.artist-list{display:flex;flex-direction:column;gap:7px}
+.artist-row{display:flex;align-items:center;gap:10px;background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:11px 14px;transition:all .2s;cursor:pointer}
+.artist-row:hover,.artist-row.active{border-color:var(--gold);background:var(--gold-dim)}
+.artist-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);min-width:18px;flex-shrink:0}
+.artist-name-btn{flex:1;background:none;border:none;text-align:left;font-size:13.5px;color:var(--cream);cursor:pointer;font-weight:600;font-family:'Nanum Myeongjo',serif;padding:0}
+.artist-genre-tag{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);padding:2px 8px;border:1px solid var(--border);border-radius:10px;white-space:nowrap;flex-shrink:0}
+.song-list{display:flex;flex-direction:column;gap:6px}
+.song-row{display:flex;align-items:center;gap:10px;background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;transition:all .2s}
+.song-row:hover,.song-row.active{border-color:var(--gold);background:var(--gold-dim)}
+.song-num{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--muted);min-width:18px;flex-shrink:0}
+.song-title{flex:1;font-size:13px;color:var(--cream)}
+.song-year{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);flex-shrink:0}
+.ref-selected-box{background:var(--navy);border:1px solid var(--gold);border-radius:8px;padding:12px 14px;margin-bottom:14px}
+.ref-sel-label{font-family:'Space Mono',monospace;font-size:9.5px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+.ref-sel-value{font-size:13.5px;color:var(--gold-light);font-weight:600}
+.ref-topic-toggle{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.ref-topic-btn{flex:1;padding:11px 10px;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Nanum Myeongjo',serif;font-size:13px;cursor:pointer;transition:all .2s;min-width:140px;text-align:center}
+.ref-topic-btn:hover{border-color:var(--gold);color:var(--text)}
+.ref-topic-btn.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold-light)}
+.ref-make-btn{background:linear-gradient(135deg,#C9A84C 0%,#A07030 100%)}
+.ref-make-btn:hover{background:linear-gradient(135deg,#E8C97A 0%,#C9A84C 100%)}
+/* ── 뮤직프롬프트 ── */
+.genre-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.genre-btn{background:var(--navy);border:1px solid var(--border);border-radius:10px;padding:14px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;transition:all .2s;color:var(--text);font-family:'Nanum Myeongjo',serif;font-size:12px}
+.genre-btn span:first-child{font-size:26px}
+.genre-btn:hover{border-color:var(--gold);background:var(--gold-dim)}
+.genre-btn.active{border-color:var(--gold);background:var(--gold-dim);color:var(--gold-light)}
+.sub-genre-label{font-family:'Space Mono',monospace;font-size:11px;color:var(--gold);margin-bottom:10px;letter-spacing:.1em}
+.sub-genre-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.sub-chip{padding:7px 14px;background:var(--navy);border:1px solid var(--border);border-radius:20px;cursor:pointer;font-family:'Nanum Myeongjo',serif;font-size:12.5px;color:var(--text);transition:all .2s}
+.sub-chip:hover{border-color:var(--gold);color:var(--gold-light)}
+.sub-chip.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold-light)}
+.mood-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.mood-chip{padding:6px 13px;background:var(--navy);border:1px solid var(--border);border-radius:20px;cursor:pointer;font-family:'Nanum Myeongjo',serif;font-size:12px;color:var(--muted);transition:all .2s}
+.mood-chip:hover{border-color:var(--gold);color:var(--gold-light)}
+.mood-chip.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold-light)}
+.lang-toggle{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:8px}
+.lang-btn{flex:1;padding:9px 8px;background:transparent;border:none;border-right:1px solid var(--border);cursor:pointer;font-family:'Nanum Myeongjo',serif;font-size:12.5px;color:var(--muted);transition:all .2s}
+.lang-btn:last-child{border-right:none}
+.lang-btn.active{background:var(--gold-dim);color:var(--gold-light)}
+.lang-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,0.03)}
+.make-btn{width:100%;padding:16px;background:var(--gold);color:var(--navy);border:none;border-radius:10px;font-family:'Nanum Myeongjo',serif;font-weight:600;font-size:15px;cursor:pointer;transition:background .2s;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px}
+.make-btn:hover{background:var(--gold-light)}
+.make-btn:disabled{opacity:.5;cursor:not-allowed}
+.prompt-result{display:flex;flex-direction:column;gap:12px}
+.result-section{background:var(--navy-mid);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.result-sec-title{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;color:var(--gold-light);font-weight:600}
+.copy-small{padding:4px 12px;background:var(--navy-light);border:1px solid var(--border);border-radius:5px;color:var(--muted);font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;transition:all .2s}
+.copy-small:hover{color:var(--gold);border-color:var(--gold)}
+.result-content{padding:16px;font-size:13px;line-height:1.95;color:var(--text);white-space:pre-wrap;font-family:'Nanum Myeongjo',serif}
+footer{text-align:center;padding:32px 0 0;border-top:1px solid var(--border);margin-top:10px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted)}
+/* ── 앨범 커버 ── */
+.cover-intro{text-align:center;padding:20px 0 16px}
+.cover-intro-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--gold-light);font-style:italic;margin-bottom:6px}
+.cover-intro-desc{font-size:12.5px;color:var(--muted);line-height:1.75;margin-bottom:8px}
+.cover-flow-hint{font-size:11.5px;color:var(--muted);background:var(--navy-mid);border:1px solid var(--border);border-radius:8px;padding:8px 14px;display:inline-block;margin-top:4px}
+.cover-flow-hint a{color:var(--gold);text-decoration:none}
+.cover-flow-hint a:hover{text-decoration:underline}
+.cov-lyrics-card{border-color:rgba(201,168,76,0.35)}
+.cov-lyrics-textarea{min-height:150px;border-color:rgba(201,168,76,0.3) !important}
+.cov-lyrics-textarea:focus{border-color:var(--gold) !important}
+.cov-lyrics-tip{display:flex;align-items:flex-start;gap:6px;font-size:11.5px;color:var(--muted);margin-top:8px}
+.cov-gen-btn{background:linear-gradient(135deg,#7C3AED 0%,#C9A84C 100%)}
+.cov-gen-btn:hover{background:linear-gradient(135deg,#9D5CF6 0%,#E8C97A 100%)}
+.cov-sig-card{border-color:var(--gold)}
+.cov-sig-badge{width:36px;height:36px;background:var(--gold);color:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-weight:700;font-size:16px;flex-shrink:0}
+.cov-sig-name{font-size:14px;font-weight:600;color:var(--cream)}
+.cov-sig-reason{font-size:11.5px;color:var(--muted);margin-top:2px}
+.cov-emotional{font-size:13px;line-height:1.85;color:var(--text);margin:12px 0;padding:12px;background:var(--navy);border-radius:8px;border-left:3px solid var(--gold)}
+.cov-temp-row{display:flex;gap:8px;flex-wrap:wrap}
+.cov-temp-item{background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:7px 13px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted)}
+.cov-temp-item span{color:var(--gold-light);font-size:13px;margin-left:4px;font-weight:700}
+.cov-dalle-card{border-color:rgba(124,58,237,0.4)}
+.cov-dalle-prompt{background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:12.5px;line-height:1.9;color:var(--text);white-space:pre-wrap;margin-bottom:12px;font-family:'Space Mono',monospace}
+.cov-dalle-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.cov-copy-main{background:var(--gold) !important;color:var(--navy) !important;border-color:var(--gold) !important;font-weight:600}
+.cov-copied-msg{font-size:12px;color:var(--green);display:none;text-align:center;padding:6px}
+.palette-row{display:flex;gap:10px;flex-wrap:wrap;padding:4px 0}
+.pal-swatch{display:flex;flex-direction:column;align-items:center;gap:5px}
+.pal-color{width:52px;height:52px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);cursor:pointer;transition:transform .15s}
+.pal-color:hover{transform:scale(1.08)}
+.pal-hex{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted)}
+.pal-role{font-size:10.5px;color:var(--text)}
+/* ── 레퍼런스 ── */
+.artist-list{display:flex;flex-direction:column;gap:8px}
+.artist-row{display:flex;align-items:center;gap:10px;background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:11px 14px;transition:all .2s}
+.artist-row.active{border-color:var(--gold);background:var(--gold-dim)}
+.artist-name-btn{flex:1;background:none;border:none;text-align:left;font-size:13.5px;color:var(--cream);cursor:pointer;font-weight:600;font-family:'Nanum Myeongjo',serif;transition:color .2s;padding:0}
+.artist-name-btn:hover{color:var(--gold-light)}
+.artist-genre-tag{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);padding:2px 8px;border:1px solid var(--border);border-radius:10px;white-space:nowrap}
+.song-load-btn{padding:6px 13px;background:var(--navy-light);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-family:'Nanum Myeongjo',serif;font-size:11.5px;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.song-load-btn:hover{border-color:var(--gold);color:var(--gold-light)}
+.song-load-btn.loading{opacity:.6;cursor:not-allowed}
+.ref-artist-name{font-family:'Space Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:.1em;margin-bottom:10px}
+.song-list{display:flex;flex-direction:column;gap:6px}
+.song-row{display:flex;align-items:center;gap:10px;background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;transition:all .2s}
+.song-row:hover{border-color:var(--gold);background:var(--gold-dim)}
+.song-row.active{border-color:var(--gold);background:var(--gold-dim)}
+.song-num{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--muted);min-width:18px;flex-shrink:0}
+.song-title{flex:1;font-size:13px;color:var(--cream)}
+.song-year{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);flex-shrink:0}
+.ref-selected-box{background:var(--navy);border:1px solid var(--gold);border-radius:8px;padding:12px 14px;margin-bottom:4px}
+.ref-sel-label{font-family:'Space Mono',monospace;font-size:9.5px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+.ref-sel-value{font-size:13.5px;color:var(--gold-light);font-weight:600}
+.ref-make-btn{background:linear-gradient(135deg,#C9A84C 0%,#A07030 100%)}
+.ref-make-btn:hover{background:linear-gradient(135deg,#E8C97A 0%,#C9A84C 100%)}
+@media(max-width:520px){
+  .tabs,.source-toggle{flex-direction:column}
+  .tab-btn,.src-btn{border-right:none!important;border-bottom:1px solid var(--border)}
+  .tab-btn:last-child,.src-btn:last-child{border-bottom:none}
+  .yt-input-row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="hdr-sub">Heavenly · 헤븐리</div>
+  <div><span class="logo-kr">헤븐리</span><span class="logo-en">Heavenly</span></div>
+  <p class="tagline">헤븐리 음악 주제 추천 및 프롬프트, 가사 생성기</p>
+  <div class="hdr-div"><span>✦</span></div>
+</header>
+
+<div class="api-card">
+  <div class="api-card-title">🔑 Anthropic API KEY</div>
+  <div class="api-row">
+    <input type="password" class="api-input" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off">
+    <button class="eye-btn" onclick="toggleEye()">🤍</button>
+    <button class="btn-save" onclick="saveKey()">저장</button>
+  </div>
+  <div class="api-status" id="apiStatus"></div>
+  <div class="api-note">
+    API 키는 브라우저에만 저장되며 외부로 전송되지 않습니다.<br>
+    키 발급: <a href="https://console.anthropic.com" target="_blank">console.anthropic.com → API Keys</a>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('theme',this)">🎵 주제 추천</button>
+  <button class="tab-btn" onclick="switchTab('prompt',this)">🎸 프롬프트·가사</button>
+  <button class="tab-btn" onclick="switchTab('ref',this)">🎤 레퍼런스</button>
+  <button class="tab-btn" onclick="switchTab('cover',this)">🎨 앨범 커버</button>
+  <button class="tab-btn" onclick="switchTab('stamp',this)">🕐 타임스탬프</button>
+</div>
+
+<!-- 패널1: 주제 추천 -->
+<div class="panel active" id="panel-theme">
+  <div class="date-bar" id="dateBar"></div>
+
+  <div class="card" style="margin-top:12px;">
+    <div class="card-head">
+      <span style="font-size:18px;">🎲</span>
+      <span class="card-head-title">오늘의 감성 노래 주제 추천</span>
+    </div>
+    <p style="font-size:13px;color:var(--muted);line-height:1.85;margin-bottom:16px;">
+      오늘 날짜·시간·계절을 분석해서 어울리는 노래 주제 5개를 추천해드려요.<br>마음에 드는 주제를 선택하면 바로 음악을 만들 수 있어요!
+    </p>
+    <button class="recommend-btn" id="themeBtn" onclick="getTheme()">
+      ✦ 오늘에 어울리는 노래 주제 추천받기
+    </button>
+  </div>
+
+  <!-- 주제 카드 목록 -->
+  <div id="themeCardList" style="display:none;">
+    <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin:16px 0 10px;text-align:center;">
+      ✦ 주제를 선택하세요
+    </div>
+    <div id="themeCards" style="display:flex;flex-direction:column;gap:10px;"></div>
+  </div>
+
+  <!-- 선택된 주제로 생성하는 카드 -->
+  <div id="themeGenCard" style="display:none;" class="card">
+    <div class="card-head">
+      <span style="font-size:16px;">✨</span>
+      <span class="card-head-title">선택한 주제로 음악 만들기</span>
+    </div>
+
+    <!-- 선택된 주제 표시 -->
+    <div class="theme-selected-box" id="themeSelectedBox"></div>
+
+    <!-- 장르 입력 -->
+    <div style="margin-top:14px;">
+      <label class="field-label">장르 선택 (선택)</label>
+      <div class="genre-grid theme-genre-grid" id="themeGenreGrid">
+        <button class="genre-btn" onclick="themePickGenre('발라드·어쿠스틱','🎙',this)"><span>🎙</span><span>발라드</span></button>
+        <button class="genre-btn" onclick="themePickGenre('팝 계열','🎤',this)"><span>🎤</span><span>팝</span></button>
+        <button class="genre-btn" onclick="themePickGenre('R&amp;B·소울','🎵',this)"><span>🎵</span><span>R&amp;B</span></button>
+        <button class="genre-btn" onclick="themePickGenre('한국 고유장르','🇰🇷',this)"><span>🇰🇷</span><span>한국장르</span></button>
+        <button class="genre-btn" onclick="themePickGenre('CCM·찬양','✝️',this)"><span>✝️</span><span>CCM</span></button>
+        <button class="genre-btn" onclick="themePickGenre('록 계열','🎸',this)"><span>🎸</span><span>록</span></button>
+        <button class="genre-btn" onclick="themePickGenre('재즈 계열','🎷',this)"><span>🎷</span><span>재즈</span></button>
+        <button class="genre-btn" onclick="themePickGenre('힙합 계열','🎧',this)"><span>🎧</span><span>힙합</span></button>
+        <button class="genre-btn" onclick="themePickGenre('일렉트로닉·댄스','🎹',this)"><span>🎹</span><span>일렉트로닉</span></button>
+      </div>
+    </div>
+
+    <!-- 가사 주제 보완 입력 -->
+    <div style="margin-top:14px;">
+      <label class="field-label">가사 주제·내용 보완 (선택)</label>
+      <textarea class="lyrics-textarea" id="themeExtraInput" style="min-height:70px;"
+        placeholder="추천받은 주제에 덧붙이고 싶은 내용을 자유롭게 입력하세요.&#10;예) 새벽 기도 중 눈물이 흐르는 장면, 위로받는 느낌을 담고 싶어요"></textarea>
+    </div>
+
+    <!-- 언어 선택 -->
+    <div style="margin-top:12px;">
+      <label class="field-label">가사 언어</label>
+      <div class="lang-toggle" id="themeLangToggle">
+        <button class="lang-btn active" onclick="themeSetLang('한국어',this)">한국어</button>
+        <button class="lang-btn" onclick="themeSetLang('English',this)">English</button>
+        <button class="lang-btn" onclick="themeSetLang('한·영 혼합',this)">한·영 혼합</button>
+      </div>
+    </div>
+
+    <!-- 생성 버튼 -->
+    <button class="make-btn" id="themeGenBtn" onclick="themeGenMusic()" style="margin-top:16px;margin-bottom:0;">
+      🎵 이 주제로 프롬프트 + 가사 생성하기
+    </button>
+  </div>
+
+  <!-- 생성 결과 -->
+  <div id="themeGenResult" style="display:none;">
+    <div class="prompt-result">
+      <div class="result-section">
+        <div class="result-sec-title">
+          <span>🎼 Suno AI 프롬프트</span>
+          <button class="copy-small" onclick="copySection('themePromptOut')">복사</button>
+        </div>
+        <div class="result-content" id="themePromptOut"></div>
+      </div>
+      <div class="result-section">
+        <div class="result-sec-title">
+          <span>✍️ 생성된 가사</span>
+          <button class="copy-small" onclick="copySection('themeLyricsOut')">복사</button>
+        </div>
+        <div class="result-content" id="themeLyricsOut"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 패널2: 프롬프트·가사 생성 -->
+<div class="panel" id="panel-prompt">
+
+  <!-- ① 대표 장르 -->
+  <div class="card">
+    <div class="card-head">
+      <div class="step-badge">①</div>
+      <span class="card-head-title">대표 장르 선택</span>
+    </div>
+    <div class="genre-grid" id="genreGrid">
+      <button class="genre-btn" onclick="selectGenre('록 계열','🎸',this)"><span>🎸</span><span>록 계열</span></button>
+      <button class="genre-btn" onclick="selectGenre('메탈 계열','🤘',this)"><span>🤘</span><span>메탈 계열</span></button>
+      <button class="genre-btn" onclick="selectGenre('팝 계열','🎤',this)"><span>🎤</span><span>팝 계열</span></button>
+      <button class="genre-btn" onclick="selectGenre('재즈 계열','🎷',this)"><span>🎷</span><span>재즈 계열</span></button>
+      <button class="genre-btn" onclick="selectGenre('R&amp;B·소울','🎵',this)"><span>🎵</span><span>R&amp;B·소울</span></button>
+      <button class="genre-btn" onclick="selectGenre('힙합 계열','🎧',this)"><span>🎧</span><span>힙합 계열</span></button>
+      <button class="genre-btn" onclick="selectGenre('클래식·오케스트라','🎻',this)"><span>🎻</span><span>클래식·오케스트라</span></button>
+      <button class="genre-btn" onclick="selectGenre('일렉트로닉·댄스','🎹',this)"><span>🎹</span><span>일렉트로닉·댄스</span></button>
+      <button class="genre-btn" onclick="selectGenre('월드뮤직·민속','🌍',this)"><span>🌍</span><span>월드뮤직·민속</span></button>
+      <button class="genre-btn" onclick="selectGenre('발라드·어쿠스틱','🎙',this)"><span>🎙</span><span>발라드·어쿠스틱</span></button>
+      <button class="genre-btn" onclick="selectGenre('한국 고유장르','🇰🇷',this)"><span>🇰🇷</span><span>한국 고유장르</span></button>
+      <button class="genre-btn" onclick="selectGenre('기타 특수장르','✨',this)"><span>✨</span><span>기타 특수장르</span></button>
+    </div>
+  </div>
+
+  <!-- ② 세부 장르 -->
+  <div class="card" id="subGenreCard" style="display:none;">
+    <div class="card-head">
+      <div class="step-badge">②</div>
+      <span class="card-head-title">세부 장르 선택</span>
+    </div>
+    <div class="sub-genre-label" id="subGenreLabel"></div>
+    <div class="sub-genre-wrap" id="subGenreWrap"></div>
+  </div>
+
+  <!-- ③ 가사 주제 -->
+  <div class="card">
+    <div class="card-head">
+      <div class="step-badge">③</div>
+      <span class="card-head-title">가사 주제 입력</span>
+    </div>
+    <input class="field-input" id="lyricsTopic" placeholder="예) 봄날 벚꽃 아래서 이별을 받아들이는 마음">
+    <div style="margin-top:10px;">
+      <label class="field-label">분위기·스타일 (선택)</label>
+      <div class="mood-chips" id="moodChips">
+        <button class="mood-chip" onclick="toggleMood(this)">감성적</button>
+        <button class="mood-chip" onclick="toggleMood(this)">웅장한</button>
+        <button class="mood-chip" onclick="toggleMood(this)">밝고 경쾌한</button>
+        <button class="mood-chip" onclick="toggleMood(this)">어둡고 묵직한</button>
+        <button class="mood-chip" onclick="toggleMood(this)">몽환적</button>
+        <button class="mood-chip" onclick="toggleMood(this)">찬양·경건한</button>
+        <button class="mood-chip" onclick="toggleMood(this)">신나는</button>
+        <button class="mood-chip" onclick="toggleMood(this)">잔잔한</button>
+        <button class="mood-chip" onclick="toggleMood(this)">중독적</button>
+        <button class="mood-chip" onclick="toggleMood(this)">서정적</button>
+      </div>
+    </div>
+    <div style="margin-top:12px;">
+      <label class="field-label">언어 선택</label>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="selectLang('한국어',this)">한국어</button>
+        <button class="lang-btn" onclick="selectLang('English',this)">English</button>
+        <button class="lang-btn" onclick="selectLang('한·영 혼합',this)">한·영 혼합</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 생성 버튼 -->
+  <button class="make-btn" id="makeBtn" onclick="makeMusic()">
+    🎵 음악 만들기 (프롬프트 + 가사 동시 생성)
+  </button>
+
+  <!-- 결과 -->
+  <div class="prompt-result" id="promptResult" style="display:none;">
+    <div class="result-section">
+      <div class="result-sec-title">
+        <span>🎼 Suno AI 프롬프트</span>
+        <button class="copy-small" onclick="copySection('promptText')">복사</button>
+      </div>
+      <div class="result-content" id="promptText"></div>
+    </div>
+    <div class="result-section">
+      <div class="result-sec-title">
+        <span>✍️ 생성된 가사</span>
+        <button class="copy-small" onclick="copySection('lyricsText')">복사</button>
+      </div>
+      <div class="result-content" id="lyricsText"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 패널3: 레퍼런스 음악 만들기 -->
+<div class="panel" id="panel-ref">
+
+  <!-- ① 대표 장르 -->
+  <div class="card">
+    <div class="card-head"><div class="step-badge">①</div><span class="card-head-title">대표 장르 선택</span></div>
+    <div class="genre-grid" id="refGenreGrid">
+      <button class="genre-btn" onclick="refPickGenre('록 계열','🎸',this)"><span>🎸</span><span>록 계열</span></button>
+      <button class="genre-btn" onclick="refPickGenre('메탈 계열','🤘',this)"><span>🤘</span><span>메탈 계열</span></button>
+      <button class="genre-btn" onclick="refPickGenre('팝 계열','🎤',this)"><span>🎤</span><span>팝 계열</span></button>
+      <button class="genre-btn" onclick="refPickGenre('재즈 계열','🎷',this)"><span>🎷</span><span>재즈 계열</span></button>
+      <button class="genre-btn" onclick="refPickGenre('R&amp;B·소울','🎵',this)"><span>🎵</span><span>R&amp;B·소울</span></button>
+      <button class="genre-btn" onclick="refPickGenre('힙합 계열','🎧',this)"><span>🎧</span><span>힙합 계열</span></button>
+      <button class="genre-btn" onclick="refPickGenre('클래식·오케스트라','🎻',this)"><span>🎻</span><span>클래식·오케스트라</span></button>
+      <button class="genre-btn" onclick="refPickGenre('일렉트로닉·댄스','🎹',this)"><span>🎹</span><span>일렉트로닉·댄스</span></button>
+      <button class="genre-btn" onclick="refPickGenre('발라드·어쿠스틱','🎙',this)"><span>🎙</span><span>발라드·어쿠스틱</span></button>
+      <button class="genre-btn" onclick="refPickGenre('한국 고유장르','🇰🇷',this)"><span>🇰🇷</span><span>한국 고유장르</span></button>
+      <button class="genre-btn" onclick="refPickGenre('CCM·찬양','✝️',this)"><span>✝️</span><span>CCM·찬양</span></button>
+      <button class="genre-btn" onclick="refPickGenre('기타 특수장르','✨',this)"><span>✨</span><span>기타 특수장르</span></button>
+    </div>
+  </div>
+
+  <!-- ② 세부 장르 -->
+  <div class="card" id="refSubCard" style="display:none;">
+    <div class="card-head"><div class="step-badge">②</div><span class="card-head-title">세부 장르 선택</span></div>
+    <div class="ref-step-loading" id="refSubLoading"><span class="spinner"></span> 세부 장르 불러오는 중...</div>
+    <div class="sub-genre-wrap" id="refSubWrap"></div>
+  </div>
+
+  <!-- ③ 대표 아티스트 -->
+  <div class="card" id="refArtistCard" style="display:none;">
+    <div class="card-head"><div class="step-badge">③</div><span class="card-head-title">대표 아티스트 선택</span></div>
+    <div class="ref-breadcrumb" id="refArtistBreadcrumb"></div>
+    <div class="ref-step-loading" id="refArtistLoading"><span class="spinner"></span> 아티스트 불러오는 중...</div>
+    <div class="artist-list" id="artistList"></div>
+  </div>
+
+  <!-- ④ 대표곡 -->
+  <div class="card" id="refSongCard" style="display:none;">
+    <div class="card-head"><div class="step-badge">④</div><span class="card-head-title">대표곡 선택</span></div>
+    <div class="ref-breadcrumb" id="refSongBreadcrumb"></div>
+    <div class="ref-step-loading" id="refSongLoading"><span class="spinner"></span> 대표곡 불러오는 중...</div>
+    <div class="song-list" id="songList"></div>
+  </div>
+
+  <!-- ⑤ 가사 주제 입력 (선택) -->
+  <div class="card" id="refTopicCard" style="display:none;">
+    <div class="card-head"><div class="step-badge">⑤</div><span class="card-head-title">가사 주제 입력 <span style="font-size:11px;color:var(--gold);font-weight:400;">— 원하면 입력하세요 (선택)</span></span></div>
+
+    <!-- 선택된 레퍼런스 표시 -->
+    <div class="ref-selected-box" id="refSelectedBox"></div>
+
+    <!-- 주제 입력 모드 토글 -->
+    <div class="ref-topic-toggle">
+      <button class="ref-topic-btn active" id="refTopicOff" onclick="setTopicMode('off',this)">
+        🎵 원곡 스타일 그대로 생성
+      </button>
+      <button class="ref-topic-btn" id="refTopicOn" onclick="setTopicMode('on',this)">
+        ✏️ 내 가사 주제로 생성
+      </button>
+    </div>
+
+    <!-- 주제 입력 영역 (토글 시 표시) -->
+    <div id="refTopicInputArea" style="display:none;">
+      <div style="margin-top:14px;">
+        <label class="field-label">가사 주제</label>
+        <input class="field-input" id="refTopicInput" placeholder="예) 봄날 새벽 기도, 이별 후의 그리움, 주님의 사랑 고백">
+      </div>
+      <div style="margin-top:10px;">
+        <label class="field-label">가사 방향·내용 (선택)</label>
+        <textarea class="lyrics-textarea" id="refContentInput" style="min-height:75px;"
+          placeholder="예) 어둠 속에서도 주님이 함께하신다는 고백, 새벽빛처럼 스며드는 위로의 느낌을 담고 싶어요"></textarea>
+      </div>
+    </div>
+
+    <!-- 언어 선택 -->
+    <div style="margin-top:14px;">
+      <label class="field-label">가사 언어</label>
+      <div class="lang-toggle" id="refLangToggle">
+        <button class="lang-btn active" onclick="selectRefLang('한국어',this)">한국어</button>
+        <button class="lang-btn" onclick="selectRefLang('English',this)">English</button>
+        <button class="lang-btn" onclick="selectRefLang('한·영 혼합',this)">한·영 혼합</button>
+      </div>
+    </div>
+
+    <!-- 생성 버튼 -->
+    <button class="make-btn ref-make-btn" id="refMakeBtn" onclick="makeRefMusic()" style="margin-top:16px;">
+      🎤 레퍼런스로 음악 만들기
+    </button>
+  </div>
+
+  <!-- ⑥ 결과 -->
+  <div id="refResultWrap" style="display:none;">
+    <div class="prompt-result" id="refResult">
+      <div class="result-section">
+        <div class="result-sec-title">
+          <span>🎼 Suno AI 프롬프트</span>
+          <button class="copy-small" onclick="copySection('refPromptText')">복사</button>
+        </div>
+        <div class="result-content" id="refPromptText"></div>
+      </div>
+      <div class="result-section">
+        <div class="result-sec-title">
+          <span>✍️ 생성된 가사</span>
+          <button class="copy-small" onclick="copySection('refLyricsText')">복사</button>
+        </div>
+        <div class="result-content" id="refLyricsText"></div>
+      </div>
+      <div class="result-section">
+        <div class="result-sec-title">
+          <span>📊 곡 분석 정보</span>
+          <button class="copy-small" onclick="copySection('refAnalysisText')">복사</button>
+        </div>
+        <div class="result-content" id="refAnalysisText"></div>
+      </div>
+    </div>
+    <button class="make-btn ref-make-btn" onclick="makeRefMusic()" style="margin-top:8px;background:var(--navy-light);border:1px solid var(--gold);color:var(--gold-light);">
+      🔄 다시 생성하기
+    </button>
+  </div>
+
+</div>
+
+
+<!-- 패널5: 앨범 커버 (PPUTROLL) -->
+<div class="panel" id="panel-cover">
+
+  <div class="cover-intro">
+    <div class="cover-intro-title">🎨 PPUTROLL Album Cover Director</div>
+    <div class="cover-intro-desc">가사·장르·제목·아티스트명을 입력하면<br>12가지 시그니처 중 최적을 분석해 DALL-E 프롬프트 + 타이포 스펙 + 컬러 팔레트를 생성합니다.</div>
+    <div class="cover-flow-hint">📋 생성된 DALL-E 프롬프트 복사 →
+      <a href="https://chat.openai.com" target="_blank">ChatGPT</a> 또는
+      <a href="https://www.bing.com/images/create" target="_blank">Bing Image Creator</a>에 붙여넣기
+    </div>
+  </div>
+
+  <!-- ① 장르·스타일 -->
+  <div class="card">
+    <div class="card-head">
+      <div class="step-badge">①</div>
+      <span class="card-head-title">장르·스타일 프롬프트</span>
+    </div>
+    <input class="field-input" id="covStyle" placeholder="예) Korean ballad, piano, acoustic, 감성적, 이별">
+    <p style="font-size:11.5px;color:var(--muted);margin-top:6px;">Suno 스타일 프롬프트 그대로 입력 가능 · 생략 가능</p>
+  </div>
+
+  <!-- ② 가사 입력 (핵심) -->
+  <div class="card cov-lyrics-card">
+    <div class="card-head">
+      <div class="step-badge">②</div>
+      <span class="card-head-title">가사 입력 <span style="font-size:11px;color:var(--gold);font-weight:400;">— 이 느낌으로 커버가 만들어져요</span></span>
+    </div>
+    <textarea class="lyrics-textarea cov-lyrics-textarea" id="covLyrics"
+      placeholder="가사를 붙여넣으세요. 전체 또는 일부만 입력해도 됩니다.
+
+가사를 분석해서:
+• 감정의 온도 / 볼륨 / 움직임을 파악
+• 12가지 시그니처 중 가장 어울리는 하나 선택
+• 그 느낌에 맞는 DALL-E 이미지 프롬프트 생성"></textarea>
+    <div class="cov-lyrics-tip">
+      <span>💡</span>
+      <span>가사 없이 장르와 분위기만으로도 생성 가능해요</span>
+    </div>
+  </div>
+
+  <!-- ③ 곡 제목 & 아티스트명 -->
+  <div class="card">
+    <div class="card-head">
+      <div class="step-badge">③</div>
+      <span class="card-head-title">곡 제목 &amp; 아티스트명</span>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:140px;">
+        <label class="field-label">곡 제목</label>
+        <input class="field-input" id="covTitle" placeholder="예) 벚꽃 저녁의 설렘">
+      </div>
+      <div style="flex:1;min-width:140px;">
+        <label class="field-label">아티스트명</label>
+        <input class="field-input" id="covArtist" placeholder="예) 헤븐리">
+      </div>
+    </div>
+  </div>
+
+  <!-- 생성 버튼 -->
+  <button class="make-btn cov-gen-btn" id="covBtn" onclick="generateCover()">
+    🎨 앨범 커버 디렉팅 시작
+  </button>
+
+  <!-- 결과: 시그니처 분석 -->
+  <div id="covAnalysis" style="display:none;" class="card cov-sig-card">
+    <div class="card-head">
+      <div class="cov-sig-badge" id="covSigBadge">A</div>
+      <div>
+        <div class="cov-sig-name" id="covSigTitle">분석 중...</div>
+        <div class="cov-sig-reason" id="covSigReason"></div>
+      </div>
+    </div>
+    <div class="cov-emotional" id="covEmotional"></div>
+    <div class="cov-temp-row" id="covTempRow"></div>
+  </div>
+
+  <!-- 결과: DALL-E 프롬프트 (핵심 복사 영역) -->
+  <div id="covDalleWrap" style="display:none;" class="card cov-dalle-card">
+    <div class="card-head">
+      <span style="font-size:18px;">🖼</span>
+      <span class="card-head-title">DALL-E 3 프롬프트</span>
+    </div>
+    <div class="cov-dalle-prompt" id="covDallePrompt"></div>
+    <div class="cov-dalle-actions">
+      <button class="copy-small cov-copy-main" onclick="copyCovPrompt()">📋 프롬프트 복사</button>
+      <a href="https://chat.openai.com" target="_blank" class="copy-small">↗ ChatGPT 열기</a>
+      <a href="https://www.bing.com/images/create" target="_blank" class="copy-small">↗ Bing 열기</a>
+    </div>
+    <div class="cov-copied-msg" id="covCopiedMsg">✓ 복사됨! ChatGPT나 Bing에 붙여넣으세요.</div>
+  </div>
+
+  <!-- 결과: 타이포 스펙 -->
+  <div id="covTypoWrap" style="display:none;">
+    <div class="card">
+      <div class="card-head">
+        <span style="font-size:16px;">📝</span>
+        <span class="card-head-title">Typography Spec</span>
+        <button class="copy-small" style="margin-left:auto;" onclick="copySection('covTypo')">복사</button>
+      </div>
+      <div class="result-content" id="covTypo"></div>
+    </div>
+
+    <!-- 결과: 컬러 팔레트 -->
+    <div class="card">
+      <div class="card-head">
+        <span style="font-size:16px;">🎨</span>
+        <span class="card-head-title">Color Palette</span>
+      </div>
+      <div id="covPalette" class="palette-row"></div>
+    </div>
+
+    <!-- 대안 시그니처 -->
+    <div class="card" id="covAltWrap" style="display:none;background:var(--navy);">
+      <div class="card-head">
+        <span style="font-size:16px;">💡</span>
+        <span class="card-head-title">대안 시그니처</span>
+      </div>
+      <div class="result-content" id="covAlt" style="font-size:13px;"></div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- 패널5: 타임스탬프 -->
+<div class="panel" id="panel-stamp">
+
+  <!-- ① 음원 소스 -->
+  <div class="card">
+    <div class="card-head">
+      <div class="step-badge">①</div>
+      <span class="card-head-title">음원 소스 선택</span>
+    </div>
+    <div class="source-toggle">
+      <button class="src-btn active" onclick="switchSource('file',this)">📁 파일 업로드</button>
+      <button class="src-btn" onclick="switchSource('youtube',this)">▶ 유튜브 URL</button>
+    </div>
+
+    <!-- 파일 업로드 -->
+    <div id="sourceFile">
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('audioFileInput').click()">
+        <div class="upload-icon">🎧</div>
+        <div class="upload-main">클릭하거나 파일을 드래그하세요</div>
+        <div class="upload-sub">MP3 · WAV · OGG · FLAC · AAC · M4A</div>
+      </div>
+      <input type="file" id="audioFileInput" class="upload-input" accept=".mp3,.wav,.ogg,.flac,.aac,.m4a,audio/*">
+      <div class="file-info" id="fileInfo">
+        <div class="file-icon">🎵</div>
+        <div class="file-meta">
+          <div class="file-name" id="fileName">—</div>
+          <div class="file-size" id="fileSize">—</div>
+        </div>
+        <button class="file-remove" onclick="removeFile()">✕</button>
+      </div>
+      <div class="player-wrap" id="playerWrap">
+        <button class="play-btn" id="playBtn" onclick="togglePlay()">▶</button>
+        <span class="player-time" id="playerTime">0:00 / 0:00</span>
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <button class="vol-btn" id="volBtn" onclick="toggleMute()">🔊</button>
+      </div>
+      <audio id="audioEl"></audio>
+    </div>
+
+    <!-- 유튜브 URL -->
+    <div id="sourceYoutube" style="display:none;">
+      <div class="yt-input-row">
+        <input class="yt-input" id="ytUrlInput" placeholder="https://www.youtube.com/watch?v=...">
+        <button class="yt-load-btn" id="ytLoadBtn" onclick="loadYoutube()">불러오기</button>
+      </div>
+      <div class="yt-info" id="ytInfo">
+        <img class="yt-thumb" id="ytThumb" src="" alt="">
+        <div class="yt-meta">
+          <div class="yt-title-text" id="ytTitleText">—</div>
+          <div class="yt-detail" id="ytDetail">—</div>
+        </div>
+        <button class="yt-remove" onclick="removeYoutube()">✕</button>
+      </div>
+      <div class="yt-player-wrap" id="ytPlayerWrap">
+        <iframe id="ytIframe" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+      </div>
+      <div class="ai-hint" id="aiHint">✦ AI가 영상 제목을 분석해 곡 목록을 자동 입력했어요. 아래에서 확인 후 수정하세요.</div>
+    </div>
+  </div>
+
+  <!-- ② 가사 입력 -->
+  <div class="card">
+    <div class="card-head">
+      <div class="step-badge">②</div>
+      <span class="card-head-title">가사 입력</span>
+    </div>
+    <textarea class="lyrics-textarea" id="lyricsInput" placeholder="여기에 가사를 붙여넣으세요.
+
+[1절]
+....가사..."></textarea>
+    <div class="lyrics-hint">
+      <span>💡</span>
+      <span>음원 파일 없이 가사만 입력해도 타임스탬프를 생성할 수 있어요 (길이 추정 기반)</span>
+    </div>
+  </div>
+
+  <!-- ③ 타임마커 (파일 업로드 시에만) -->
+  <div class="card" id="markerCard" style="display:none;">
+    <div class="card-head">
+      <div class="step-badge">③</div>
+      <span class="card-head-title">재생 중 타임마커 찍기</span>
+    </div>
+    <p style="font-size:12.5px;color:var(--muted);line-height:1.8;margin-bottom:8px;">
+      음악을 들으며 곡이 바뀌는 순간 버튼을 누르세요. 현재 재생 시간이 자동 기록됩니다.
+    </p>
+    <button class="marker-btn" onclick="addMarker()">⊕ 현재 시간 마커 추가</button>
+    <div class="markers-list" id="markersList"></div>
+  </div>
+
+  <!-- ④ 생성 -->
+  <div class="card">
+    <div class="card-head">
+      <div class="step-badge" id="stepGenBadge">④</div>
+      <span class="card-head-title">영상 정보 입력 &amp; 타임스탬프 생성</span>
+    </div>
+    <div class="ts-form">
+      <div>
+        <label class="field-label">영상 제목</label>
+        <input class="field-input" id="tsTitle" placeholder="예) 헤븐리가 추천하는 봄밤 찬양 모음">
+      </div>
+      <div>
+        <label class="field-label">곡 목록 (시간 + 곡 제목, 한 줄에 하나씩)</label>
+        <textarea class="lyrics-textarea" id="tsSongs" style="min-height:90px;" placeholder="0:00 주님의 손길 (어노인팅)
+3:24 내 맘의 주여 소망되소서
+7:10 나 주님의 기쁨되기 원하네"></textarea>
+      </div>
+      <div>
+        <label class="field-label">추가 요청사항 (선택)</label>
+        <input class="field-input" id="tsExtra" placeholder="예) 각 곡 소개 한 줄씩 추가해줘">
+      </div>
+      <button class="ts-btn" id="tsBtn" onclick="generateTimestamp()">
+        ✦ 헤븐리 타임스탬프 생성하기
+      </button>
+    </div>
+  </div>
+
+  <div class="ts-output" id="tsOutput">
+    <button class="copy-btn" onclick="copyTs()">복사</button>
+    <div id="tsText"></div>
+  </div>
+
+</div>
+
+<footer>헤븐리 Heavenly · AI 유튜브 타임스탬프 생성기</footer>
+</div>
+
+<script>
+let apiKey = localStorage.getItem('hv_apiKey') || '';
+let eyeOpen = false, markers = [], muted = false, currentSource = 'file';
+
+/* ── 앨범 커버 (PPUTROLL) ── */
+async function generateCover() {
+  if (!apiKey) { alert('Anthropic API 키를 먼저 저장해주세요.'); return; }
+  const style  = document.getElementById('covStyle').value.trim();
+  const lyrics = document.getElementById('covLyrics').value.trim();
+  const title  = document.getElementById('covTitle').value.trim();
+  const artist = document.getElementById('covArtist').value.trim();
+  if (!title)  { alert('곡 제목을 입력해주세요.'); return; }
+  if (!artist) { alert('아티스트명을 입력해주세요.'); return; }
+  if (!lyrics && !style) { alert('가사 또는 장르·스타일을 입력해주세요.'); return; }
+
+  const btn = document.getElementById('covBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> 가사 감정 분석 중...';
+
+  // 결과 초기화
+  document.getElementById('covAnalysis').style.display = 'none';
+  document.getElementById('covDalleWrap').style.display = 'none';
+  document.getElementById('covTypoWrap').style.display = 'none';
+  document.getElementById('covCopiedMsg').style.display = 'none';
+
+  try {
+    const system = `당신은 PPUTROLL Album Cover Director입니다.
+가사의 감정을 깊이 분석하여 12가지 시그니처 중 최적을 선택하고 DALL-E 3 프롬프트를 생성합니다.
+
+## 12개 시그니처:
+A Twilight Canvas — 한국 발라드, 이별, 그리움 / 일러스트 풍경, 따뜻한 석양
+B Neon Solitude — R&B, 도시, 새벽, 고독 / 네온, 비 젖은 거리, 어두운 도시
+C Soft Daylight — 인디팝, 봄, 청춘, 설렘 / 밝은 야외, 자연광, 따뜻한 일상
+D The Void — 미니멀, 공허, 실험적 / 극도의 여백, 85%+ 네거티브 스페이스
+E Raw Impact — 메탈, 록, 강렬함 / 굵고 강한 비주얼, 대비 강한 구도
+F Floating Dream — 몽환, 드림팝, 일렉트로닉 / 추상적, 부유하는 이미지
+G Vintage Frame — 레트로, 재즈, 포크 / 빈티지 질감, 필름 느낌
+H Urban Edge — 힙합, 스트릿, 현대적 / 도시적, 날카로운 구도
+I Golden Hour — CCM, 찬양, 경건함 / 황금빛, 신성한 분위기, 빛
+J Broken Signal — 실험, 노이즈, 해체 / 왜곡, 글리치, 파편
+K Playful Pop — 케이팝, 신나는, 밝음 / 컬러풀, 역동적
+L Cinematic Still — OST, 영화적, 서사적 / 정적인 영화 한 장면
+
+## DALL-E 프롬프트 절대 규칙:
+- 1024x1024 정사각형
+- 메인 시각 요소 1개만
+- 30% 이상 네거티브 스페이스
+- 텍스트/글자/숫자 절대 없음
+- 스티커/배지/로고/장식 없음
+- 반드시 문장 끝에 포함:
+  "No stickers, no badges, no emblems, no logos, no brand names, no stamps, no watermarks. No decorative text, no slogans, no quotes. No text, no words, no letters, no numbers."
+
+## 반드시 순수 JSON만 응답 (마크다운 없이):
+{
+  "signature": "A",
+  "signatureName": "Twilight Canvas",
+  "sigReason": "가사의 이별 정서와 잔잔한 그리움이 황혼 풍경과 가장 잘 맞음",
+  "emotionalCore": "가사에서 추출한 감정 장면 묘사 (한국어 2문장, 감성적으로)",
+  "warmth": 6,
+  "volume": 3,
+  "movement": 2,
+  "dallePrompt": "완전한 DALL-E 3 영문 프롬프트 (150-200단어, 위 규칙 + NEGATIVE BLOCK 포함)",
+  "typoSpec": "타이포그래피 스펙 카드 (폰트명, 위치, 색상, 크기 포함, 한국어로 상세하게)",
+  "palette": [
+    {"hex":"#XXXXXX","role":"배경"},
+    {"hex":"#XXXXXX","role":"주요 색상"},
+    {"hex":"#XXXXXX","role":"포인트"},
+    {"hex":"#XXXXXX","role":"텍스트 색"}
+  ],
+  "alternate": "대안 시그니처 X (이름) — 다른 해석 한 줄"
+}`;
+
+    const userMsg = `Style Prompt: ${style||'(없음)'}
+Lyrics:
+${lyrics||'(가사 없음 — 장르와 스타일로만 분석)'}
+
+Song Title: ${title}
+Artist Name: ${artist}`;
+
+    const raw = await callClaude(system, userMsg, 1800);
+    const data = JSON.parse(raw.replace(/```json|```/g,'').trim());
+
+    // 시그니처 분석 표시
+    document.getElementById('covSigBadge').textContent = data.signature || 'A';
+    document.getElementById('covSigTitle').textContent =
+      `Signature ${data.signature}: ${data.signatureName}`;
+    document.getElementById('covSigReason').textContent = data.sigReason || '';
+    document.getElementById('covEmotional').textContent = data.emotionalCore || '';
+    document.getElementById('covTempRow').innerHTML = `
+      <div class="cov-temp-item">🌡 Warmth<span>${data.warmth}/10</span></div>
+      <div class="cov-temp-item">🔊 Volume<span>${data.volume}/10</span></div>
+      <div class="cov-temp-item">💨 Movement<span>${data.movement}/10</span></div>`;
+    document.getElementById('covAnalysis').style.display = 'block';
+
+    // DALL-E 프롬프트
+    document.getElementById('covDallePrompt').textContent = data.dallePrompt || '';
+    document.getElementById('covDalleWrap').style.display = 'block';
+
+    // 타이포 스펙
+    document.getElementById('covTypo').textContent = data.typoSpec || '';
+
+    // 컬러 팔레트
+    document.getElementById('covPalette').innerHTML = (data.palette||[]).map(p=>`
+      <div class="pal-swatch" onclick="copyText('${p.hex}',this,'✓')" title="${p.hex} 복사">
+        <div class="pal-color" style="background:${p.hex}"></div>
+        <div class="pal-hex">${p.hex}</div>
+        <div class="pal-role">${p.role}</div>
+      </div>`).join('');
+
+    // 대안
+    if (data.alternate) {
+      document.getElementById('covAlt').textContent = data.alternate;
+      document.getElementById('covAltWrap').style.display = 'block';
+    }
+
+    document.getElementById('covTypoWrap').style.display = 'block';
+    document.getElementById('covDalleWrap').scrollIntoView({behavior:'smooth', block:'start'});
+
+  } catch(e) {
+    alert('오류: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🎨 앨범 커버 디렉팅 시작';
+  }
+}
+
+async function copyCovPrompt() {
+  const text = document.getElementById('covDallePrompt').textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+    const msg = document.getElementById('covCopiedMsg');
+    msg.style.display = 'block';
+    setTimeout(() => msg.style.display='none', 3000);
+  } catch { alert('복사 실패'); }
+}
+
+/* ── 기존 초기화 ── */
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (apiKey) { document.getElementById('apiKeyInput').value = apiKey; setApiStatus('ok','✓ 저장된 API 키 있음'); }
+  renderDateBar();
+});
+
+
+
+function renderDateBar() {
+  const now = new Date(), days=['일','월','화','수','목','금','토'], m=now.getMonth()+1, h=now.getHours();
+  const season = m<=2||m===12?'❄️ 겨울':m<=5?'🌸 봄':m<=8?'☀️ 여름':'🍂 가을';
+  const tod = h<6?'🌙 새벽':h<12?'🌅 아침':h<18?'☀️ 오후':'🌃 저녁';
+  document.getElementById('dateBar').innerHTML = `<span>📅 ${now.getFullYear()}.${String(m).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} (${days[now.getDay()]})</span><span>${season}</span><span>${tod} ${String(h).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}</span>`;
+}
+
+function toggleEye() { eyeOpen=!eyeOpen; document.getElementById('apiKeyInput').type=eyeOpen?'text':'password'; }
+function saveKey() {
+  const v=document.getElementById('apiKeyInput').value.trim();
+  if (!v) { setApiStatus('','⚠️ API 키를 입력해주세요'); return; }
+  apiKey=v; localStorage.setItem('hv_apiKey',v); setApiStatus('ok','✓ 저장된 API 키 있음');
+}
+function setApiStatus(t,msg) { const el=document.getElementById('apiStatus'); el.textContent=msg; el.className='api-status'+(t==='ok'?' ok':''); }
+
+function switchTab(id,btn) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active'); btn.classList.add('active');
+}
+
+function switchSource(src,btn) {
+  currentSource=src;
+  document.querySelectorAll('.src-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  document.getElementById('sourceFile').style.display=src==='file'?'block':'none';
+  document.getElementById('sourceYoutube').style.display=src==='youtube'?'block':'none';
+  if (src==='youtube') { document.getElementById('markerCard').style.display='none'; document.getElementById('stepGenBadge').textContent='③'; }
+  else { document.getElementById('stepGenBadge').textContent='④'; }
+}
+
+async function callClaude(system,user,maxTokens=1000) {
+  if (!apiKey) throw new Error('API 키가 설정되지 않았습니다.');
+  const res = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:maxTokens,system,messages:[{role:'user',content:user}]})});
+  if (!res.ok) { const e=await res.json().catch(()=>({})); throw new Error(e?.error?.message||`HTTP ${res.status}`); }
+  const d=await res.json(); return d.content?.[0]?.text||'';
+}
+
+let themeSelectedData = null;
+let themeGenre = '';
+let themeLang = '한국어';
+
+async function getTheme() {
+  if (!apiKey) { alert('API 키를 먼저 저장해주세요.'); return; }
+  const btn = document.getElementById('themeBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> 분석 중...';
+  document.getElementById('themeCardList').style.display = 'none';
+  document.getElementById('themeGenCard').style.display = 'none';
+  document.getElementById('themeGenResult').style.display = 'none';
+  themeSelectedData = null;
+
+  try {
+    const now = new Date(), m = now.getMonth()+1, h = now.getHours();
+    const day = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'][now.getDay()];
+    const season = m<=2||m===12?'겨울':m<=5?'봄':m<=8?'여름':'가을';
+    const tod = h<6?'새벽':h<12?'아침':h<18?'오후':'저녁';
+
+    const system = `당신은 AI 음악 평론가 "헤븐리(Heavenly)"입니다.
+오늘의 날짜·계절·시간대에 어울리는 노래 주제 5가지를 추천하세요.
+반드시 순수 JSON 배열만 응답 (마크다운 없이):
+[
+  {"title":"주제 제목(15자 이내)","description":"감성적 설명(60자 이내)","keywords":["키워드1","키워드2","키워드3"],"mood":"분위기 한 단어"},
+  ...5개
+]`;
+
+    const raw = await callClaude(system,
+      `오늘은 ${now.getFullYear()}년 ${m}월 ${now.getDate()}일 ${day}, ${season} ${tod}입니다.`);
+    const themes = JSON.parse(raw.replace(/```json|```/g,'').trim());
+
+    const cards = document.getElementById('themeCards');
+    cards.innerHTML = themes.map((t, i) => `
+      <div class="theme-card" onclick="themeSelectCard(${i}, this)" data-idx="${i}">
+        <div class="theme-card-select">✓</div>
+        <div class="theme-card-num">주제 ${i+1}</div>
+        <div class="theme-card-title">${t.title}</div>
+        <div class="theme-card-desc">${t.description}</div>
+        <div class="theme-card-badges">
+          ${(t.keywords||[]).map(k=>`<span class="theme-card-badge">${k}</span>`).join('')}
+          ${t.mood?`<span class="theme-card-badge mood">${t.mood}</span>`:''}
+        </div>
+      </div>`).join('');
+
+    // 데이터 저장
+    cards.dataset.themes = JSON.stringify(themes);
+    document.getElementById('themeCardList').style.display = 'block';
+
+  } catch(e) { alert('오류: ' + e.message); }
+  finally { btn.disabled=false; btn.innerHTML='✦ 다시 추천받기'; }
+}
+
+function themeSelectCard(idx, card) {
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+
+  const themes = JSON.parse(document.getElementById('themeCards').dataset.themes || '[]');
+  themeSelectedData = themes[idx];
+
+  const box = document.getElementById('themeSelectedBox');
+  box.innerHTML = `
+    <div class="theme-selected-label">선택한 주제</div>
+    <div class="theme-selected-title">✦ ${themeSelectedData.title}</div>
+    <div class="theme-selected-desc">${themeSelectedData.description}</div>`;
+
+  const genCard = document.getElementById('themeGenCard');
+  genCard.style.display = 'block';
+  genCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  document.getElementById('themeGenResult').style.display = 'none';
+}
+
+function themePickGenre(name, emoji, btn) {
+  themeGenre = themeGenre === name ? '' : name;
+  document.querySelectorAll('#themeGenreGrid .genre-btn').forEach(b => b.classList.remove('active'));
+  if (themeGenre) btn.classList.add('active');
+}
+
+function themeSetLang(lang, btn) {
+  themeLang = lang;
+  document.querySelectorAll('#themeLangToggle .lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function themeGenMusic() {
+  if (!apiKey) { alert('API 키를 먼저 저장해주세요.'); return; }
+  if (!themeSelectedData) { alert('주제를 선택해주세요.'); return; }
+
+  const extra = document.getElementById('themeExtraInput').value.trim();
+  const btn = document.getElementById('themeGenBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> 프롬프트 + 가사 생성 중...';
+  document.getElementById('themeGenResult').style.display = 'none';
+
+  try {
+    const system = `당신은 AI 음악 창작 전문가입니다.
+주어진 노래 주제와 분위기를 바탕으로 Suno AI 프롬프트와 가사를 생성합니다.
+반드시 순수 JSON만 응답 (마크다운 없이):
+{
+  "prompt": "Suno AI 영문 프롬프트 (장르·악기·분위기·BPM 포함, 120자 이내)",
+  "lyrics": "완성된 가사 (절/코러스/브릿지 구조 포함)"
+}`;
+
+    const userMsg = `노래 주제: ${themeSelectedData.title}
+주제 설명: ${themeSelectedData.description}
+분위기: ${themeSelectedData.mood || ''}
+키워드: ${(themeSelectedData.keywords||[]).join(', ')}
+${themeGenre ? '장르: ' + themeGenre : ''}
+${extra ? '추가 내용: ' + extra : ''}
+가사 언어: ${themeLang}`;
+
+    const raw = await callClaude(system, userMsg, 2000);
+    const data = JSON.parse(raw.replace(/```json|```/g,'').trim());
+
+    document.getElementById('themePromptOut').textContent = data.prompt || '';
+    document.getElementById('themeLyricsOut').textContent = data.lyrics || '';
+    const result = document.getElementById('themeGenResult');
+    result.style.display = 'block';
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch(e) { alert('생성 오류: ' + e.message); }
+  finally {
+    btn.disabled = false;
+    btn.innerHTML = '🎵 이 주제로 프롬프트 + 가사 생성하기';
+  }
+}
+
+
+const audioEl=document.getElementById('audioEl');
+document.getElementById('audioFileInput').addEventListener('change',e=>{ if(e.target.files[0]) loadAudioFile(e.target.files[0]); });
+const uploadZone=document.getElementById('uploadZone');
+uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('dragover');});
+uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('dragover');if(e.dataTransfer.files[0])loadAudioFile(e.dataTransfer.files[0]);});
+function loadAudioFile(file) {
+  audioEl.src=URL.createObjectURL(file); audioEl.load();
+  const mb=(file.size/1024/1024).toFixed(1);
+  document.getElementById('fileName').textContent=file.name;
+  audioEl.addEventListener('loadedmetadata',()=>{document.getElementById('fileSize').textContent=`${mb} MB · ${fmt(audioEl.duration)}`;document.getElementById('playerTime').textContent=`0:00 / ${fmt(audioEl.duration)}`;},{once:true});
+  document.getElementById('fileInfo').classList.add('visible');
+  document.getElementById('playerWrap').classList.add('visible');
+  document.getElementById('markerCard').style.display='block';
+  markers=[]; renderMarkers();
+}
+function removeFile() {
+  audioEl.pause(); audioEl.src='';
+  ['fileInfo','playerWrap'].forEach(id=>document.getElementById(id).classList.remove('visible'));
+  document.getElementById('markerCard').style.display='none';
+  document.getElementById('audioFileInput').value='';
+  document.getElementById('playBtn').textContent='▶';
+  document.getElementById('progressFill').style.width='0%';
+  markers=[]; renderMarkers();
+}
+function togglePlay() { if(!audioEl.src)return; if(audioEl.paused){audioEl.play();document.getElementById('playBtn').textContent='⏸';}else{audioEl.pause();document.getElementById('playBtn').textContent='▶';} }
+function toggleMute() { muted=!muted; audioEl.muted=muted; document.getElementById('volBtn').textContent=muted?'🔇':'🔊'; }
+audioEl.addEventListener('timeupdate',()=>{const c=audioEl.currentTime,d=audioEl.duration||1;document.getElementById('progressFill').style.width=(c/d*100)+'%';document.getElementById('playerTime').textContent=`${fmt(c)} / ${fmt(d)}`;});
+audioEl.addEventListener('ended',()=>document.getElementById('playBtn').textContent='▶');
+document.getElementById('progressWrap').addEventListener('click',e=>{if(!audioEl.duration)return;const r=e.currentTarget.getBoundingClientRect();audioEl.currentTime=((e.clientX-r.left)/r.width)*audioEl.duration;});
+function fmt(s){if(!s||isNaN(s))return'0:00';return`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;}
+
+function addMarker() { if(!audioEl.src)return; markers.push({time:audioEl.currentTime,label:''}); markers.sort((a,b)=>a.time-b.time); renderMarkers(); syncMarkers(); }
+function renderMarkers() {
+  document.getElementById('markersList').innerHTML=markers.map((m,i)=>`<div class="marker-item"><span class="marker-time" onclick="audioEl.currentTime=${m.time}">${fmt(m.time)}</span><input class="marker-label" value="${esc(m.label)}" placeholder="곡 제목 입력..." oninput="markers[${i}].label=this.value;syncMarkers()"><button class="marker-del" onclick="markers.splice(${i},1);renderMarkers();syncMarkers()">✕</button></div>`).join('');
+}
+function syncMarkers(){document.getElementById('tsSongs').value=markers.map(m=>`${fmt(m.time)} ${m.label}`).join('\n');}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function parseYtId(url){const m=url.match(/(?:v=|youtu\.be\/|\/shorts\/)([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
+async function loadYoutube() {
+  const url=document.getElementById('ytUrlInput').value.trim();
+  if(!url){alert('유튜브 URL을 입력해주세요.');return;}
+  const vid=parseYtId(url);
+  if(!vid){alert('유튜브 URL 형식이 올바르지 않아요.\n예) https://www.youtube.com/watch?v=XXXXXXXXXXX');return;}
+  const btn=document.getElementById('ytLoadBtn'); btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
+  try {
+    const oe=await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${vid}&format=json`).then(r=>r.json());
+    document.getElementById('ytThumb').src=`https://img.youtube.com/vi/${vid}/mqdefault.jpg`;
+    document.getElementById('ytTitleText').textContent=oe.title||'제목 없음';
+    document.getElementById('ytDetail').textContent=oe.author_name||'';
+    document.getElementById('ytInfo').classList.add('visible');
+    document.getElementById('ytIframe').src=`https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1`;
+    document.getElementById('ytPlayerWrap').classList.add('visible');
+    if(!document.getElementById('tsTitle').value.trim()) document.getElementById('tsTitle').value=oe.title||'';
+    if(apiKey&&!document.getElementById('tsSongs').value.trim()) autoExtractSongs(oe.title,oe.author_name);
+  } catch(e) { alert('유튜브 정보를 불러오지 못했어요.\nURL을 확인해주세요.'); }
+  finally { btn.disabled=false; btn.innerHTML='불러오기'; }
+}
+async function autoExtractSongs(title,channel) {
+  if(!title)return;
+  try {
+    const result=await callClaude(`유튜브 영상 제목을 보고 여러 곡 모음이면 예상 타임스탬프 목록을, 단일 곡이면 "0:00 곡제목" 한 줄만 출력하세요. 형식: 0:00 곡제목 (설명 없이 목록만)`,`영상 제목: "${title}"\n채널: "${channel||''}"`,600);
+    if(result.trim()){document.getElementById('tsSongs').value=result.trim();document.getElementById('aiHint').classList.add('visible');}
+  } catch(e){}
+}
+function removeYoutube() {
+  document.getElementById('ytInfo').classList.remove('visible');
+  document.getElementById('ytPlayerWrap').classList.remove('visible');
+  document.getElementById('ytIframe').src='';
+  document.getElementById('ytUrlInput').value='';
+  document.getElementById('aiHint').classList.remove('visible');
+}
+
+async function generateTimestamp() {
+  if(!apiKey){alert('API 키를 먼저 저장해주세요.');return;}
+  const title=document.getElementById('tsTitle').value.trim();
+  const songs=document.getElementById('tsSongs').value.trim();
+  const lyrics=document.getElementById('lyricsInput').value.trim();
+  const extra=document.getElementById('tsExtra').value.trim();
+  if(!songs&&!lyrics){alert('곡 목록 또는 가사를 입력해주세요.');return;}
+  const btn=document.getElementById('tsBtn'); btn.disabled=true; btn.innerHTML='<span class="spinner"></span> 생성 중...';
+  try {
+    const system=`당신은 유튜브 채널 "Heavenlymoment"의 타임스탬프 에디터입니다. 유튜브 설명란에 최적화된 타임스탬프를 생성해주세요.\n• 형식: 0:00 곡제목\n• 가사만 있을 경우 구조 분석해 시간 추정\n• 추가 요청 반영\n• 설명 없이 타임스탬프만 출력`;
+    const parts=[];
+    if(title) parts.push(`영상 제목: ${title}`);
+    if(songs) parts.push(`곡 목록:\n${songs}`);
+    if(lyrics) parts.push(`가사:\n${lyrics}`);
+    if(extra) parts.push(`추가 요청: ${extra}`);
+    const result=await callClaude(system,parts.join('\n\n'),1200);
+    document.getElementById('tsText').textContent=result;
+    document.getElementById('tsOutput').classList.add('visible');
+    document.getElementById('tsOutput').scrollIntoView({behavior:'smooth',block:'start'});
+  } catch(e){alert('오류: '+e.message);}
+  finally{btn.disabled=false;btn.innerHTML='✦ 헤븐리 타임스탬프 생성하기';}
+}
+
+
+/* ══ 레퍼런스 탭 ══ */
+let refGenre = '', refSubGenre = '', refArtist = '', refSong = '';
+let refTopicMode = 'off'; // 'off' | 'on'
+let refLang = '한국어';
+
+/* ① 대표 장르 클릭 → 세부 장르 AI 생성 */
+async function refPickGenre(name, emoji, btn) {
+  if (!apiKey) { alert('API 키를 먼저 저장해주세요.'); return; }
+  refGenre = name; refSubGenre = ''; refArtist = ''; refSong = '';
+  document.querySelectorAll('#refGenreGrid .genre-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  // 하위 카드 모두 숨기기
+  ['refSubCard','refArtistCard','refSongCard','refTopicCard','refResultWrap']
+    .forEach(id => document.getElementById(id).style.display = 'none');
+
+  const card = document.getElementById('refSubCard');
+  const loading = document.getElementById('refSubLoading');
+  const wrap = document.getElementById('refSubWrap');
+  card.style.display = 'block';
+  loading.style.display = 'flex';
+  wrap.innerHTML = '';
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  try {
+    const raw = await callClaude(
+      `음악 장르 전문가입니다. 순수 JSON 배열만 응답: ["세부장르1","세부장르2",...]`,
+      `"${name}"의 세부 장르 10~12개를 알려주세요.`, 400);
+    const subs = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    wrap.innerHTML = subs.map(s =>
+      `<button class="sub-chip" onclick="refPickSub('${s.replace(/'/g,"\\'")}',this)">${s}</button>`
+    ).join('');
+  } catch(e) { wrap.innerHTML = `<p style="color:var(--muted);font-size:12px;">불러오기 실패: ${e.message}</p>`; }
+  finally { loading.style.display = 'none'; }
+}
+
+/* ② 세부 장르 클릭 → 대표 아티스트 10명 AI 생성 */
+async function refPickSub(name, btn) {
+  if (!apiKey) { alert('API 키를 먼저 저장해주세요.'); return; }
+  refSubGenre = name; refArtist = ''; refSong = '';
+  document.querySelectorAll('#refSubWrap .sub-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  ['refArtistCard','refSongCard','refTopicCard','refResultWrap']
+    .forEach(id => document.getElementById(id).style.display = 'none');
+
+  const card = document.getElementById('refArtistCard');
+  const loading = document.getElementById('refArtistLoading');
+  const list = document.getElementById('artistList');
+  const breadcrumb = document.getElementById('refArtistBreadcrumb');
+
+  card.style.display = 'block';
+  loading.style.display = 'flex';
+  list.innerHTML = '';
+  breadcrumb.textContent = `${refGenre}  >  ${refSubGenre}`;
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  try {
+    const raw = await callClaude(
+      `음악 전문가입니다. 순수 JSON 배열만 응답: [{"name":"아티스트명","desc":"한줄소개"},...]`,
+      `"${refSubGenre}" 장르의 대표 아티스트 10명을 알려주세요. 국내외 모두 포함.`, 600);
+    const artists = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    list.innerHTML = artists.map((a, i) => `
+      <div class="artist-row" onclick="refPickArtist('${esc(a.name)}',this)">
+        <span class="artist-num">${i+1}</span>
+        <button class="artist-name-btn">${a.name}</button>
+        <span class="artist-genre-tag">${a.desc||refSubGenre}</span>
+      </div>`).join('');
+  } catch(e) { list.innerHTML = `<p style="color:var(--muted);font-size:12px;">불러오기 실패: ${e.message}</p>`; }
+  finally { loading.style.display = 'none'; }
+}
+
+/* ③ 아티스트 클릭 → 대표곡 10곡 AI 생성 */
+async function refPickArtist(name, row) {
+  if (!apiKey) { alert('API 키를 먼저 저장해주세요.'); return; }
+  refArtist = name; refSong = '';
+  document.querySelectorAll('.artist-row').forEach(r => r.classList.remove('active'));
+  row.classList.add('active');
+
+  ['refSongCard','refTopicCard','refResultWrap']
+    .forEach(id => document.getElementById(id).style.display = 'none');
+
+  const card = document.getElementById('refSongCard');
+  const loading = document.getElementById('refSongLoading');
+  const list = document.getElementById('songList');
+  const breadcrumb = document.getElementById('refSongBreadcrumb');
+
+  card.style.display = 'block';
+  loading.style.display = 'flex';
+  list.innerHTML = '';
+  breadcrumb.textContent = `${refSubGenre}  >  ${name}`;
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  try {
+    const raw = await callClaude(
+      `음악 데이터베이스입니다. 순수 JSON만 응답: [{"title":"곡명","year":"연도","desc":"한줄소개"},...]`,
+      `"${name}"의 대표곡 10곡을 알려주세요.`, 700);
+    const songs = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    list.innerHTML = songs.map((s, i) => `
+      <div class="song-row" onclick="refPickSong('${esc(s.title)}','${esc(s.desc||'')}',this)">
+        <span class="song-num">${i+1}</span>
+        <span class="song-title">${s.title}</span>
+        <span class="song-year">${s.year||''}</span>
+      </div>`).join('');
+  } catch(e) { list.innerHTML = `<p style="color:var(--muted);font-size:12px;">불러오기 실패: ${e.message}</p>`; }
+  finally { loading.style.display = 'none'; }
+}
+
+/* ④ 곡 클릭 → 가사 주제 입력 카드 표시 */
+function refPickSong(title, desc, row) {
+  refSong = title;
+  document.querySelectorAll('.song-row').forEach(r => r.classList.remove('active'));
+  row.classList.add('active');
+
+  document.getElementById('refResultWrap').style.display = 'none';
+
+  const box = document.getElementById('refSelectedBox');
+  box.innerHTML = `
+    <div class="ref-sel-label">선택한 레퍼런스</div>
+    <div class="ref-sel-value">🎤 ${refArtist} — ${title}</div>
+    ${desc ? `<div style="font-size:11.5px;color:var(--muted);margin-top:4px;">${desc}</div>` : ''}`;
+
+  const card = document.getElementById('refTopicCard');
+  card.style.display = 'block';
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* 주제 입력 모드 토글 */
+function setTopicMode(mode, btn) {
+  refTopicMode = mode;
+  document.querySelectorAll('.ref-topic-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('refTopicInputArea').style.display = mode === 'on' ? 'block' : 'none';
+}
+
+function selectRefLang(lang, btn) {
+  refLang = lang;
+  document.querySelectorAll('#refLangToggle .lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ⑤ 생성 버튼 → 곡 분석 + 프롬프트 + 가사 */
+async function makeRefMusic() {
+  if (!apiKey) { alert('API 키를 먼저 저장해주세요.'); return; }
+  if (!refSong) { alert('곡을 선택해주세요.'); return; }
+
+  const topic   = document.getElementById('refTopicInput').value.trim();
+  const content = document.getElementById('refContentInput').value.trim();
+  const useCustom = refTopicMode === 'on';
+  if (useCustom && !topic) { alert('가사 주제를 입력해주세요.'); return; }
+
+  const btn = document.getElementById('refMakeBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> 곡 분석 + 생성 중...';
+  document.getElementById('refResultWrap').style.display = 'none';
+
+  try {
+    const system = `당신은 AI 음악 창작 전문가입니다.
+레퍼런스 곡을 깊이 분석하여 Suno AI 프롬프트와 가사를 생성합니다.
+
+반드시 순수 JSON만 응답 (마크다운 없이):
+{
+  "analysis": "원곡 분석 (BPM, 조성, 악기구성, 분위기, 멜로디 특징, 구조 — 한국어 3-4문장)",
+  "prompt": "Suno AI 영문 프롬프트 (원곡 스타일 반영, 장르·악기·BPM·분위기 포함, 120자 이내)",
+  "lyrics": "완성된 가사 전체 (절/브릿지/코러스 구조 포함)"
+}`;
+
+    const modeDesc = useCustom
+      ? `✏️ 새 가사 주제: "${topic}"${content ? '\n가사 방향: ' + content : ''}\n가사 언어: ${refLang}\n\n원곡의 음악적 스타일(악기, BPM, 분위기, 멜로디 구조)은 유지하되, 가사 내용은 위 주제로 완전히 새롭게 작성하세요.`
+      : `🎵 원곡 스타일 그대로 생성\n가사 언어: ${refLang}\n\n원곡의 음악적 스타일과 가사 주제/분위기를 참고하여 새로운 오리지널 곡을 만드세요.`;
+
+    const userMsg = `레퍼런스 아티스트: ${refArtist}
+레퍼런스 곡: ${refSong}
+장르: ${refGenre} > ${refSubGenre}
+
+${modeDesc}`;
+
+    const raw = await callClaude(system, userMsg, 2200);
+    const data = JSON.parse(raw.replace(/```json|```/g,'').trim());
+
+    document.getElementById('refAnalysisText').textContent = data.analysis || '';
+    document.getElementById('refPromptText').textContent   = data.prompt   || '';
+    document.getElementById('refLyricsText').textContent   = data.lyrics   || '';
+
+    const wrap = document.getElementById('refResultWrap');
+    wrap.style.display = 'block';
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch(e) { alert('생성 오류: ' + e.message); }
+  finally {
+    btn.disabled = false;
+    btn.innerHTML = '🎤 레퍼런스로 음악 만들기';
+  }
+}
+
+/* ══ 기존 레퍼런스 함수 제거 (하위 호환) ══ */
+function refSelectGenre(){}
+function refSelectArtist(){}
+function loadSongs(){}
+function refSelectSong(){}
+function selectRefLang(lang,btn){
+  refLang=lang;
+  document.querySelectorAll('#refLangToggle .lang-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+function makeRefMusic_old(){}
+
+/* ── 장르 데이터 ── */
+const SUB_GENRES = {
+  '록 계열':['클래식 록','하드 록','소프트 록','얼터너티브','인디 록','펑크 록','프로그레시브 록','그런지','팝 록','포스트 록'],
+  '메탈 계열':['헤비 메탈','스래시 메탈','데스 메탈','블랙 메탈','파워 메탈','고딕 메탈','뉴 메탈','둠 메탈','프로그레시브 메탈','심포닉 메탈'],
+  '팝 계열':['팝','댄스팝','일렉트로팝','드림팝','시네마틱팝','버블검팝','아트팝','케이팝','J-POP','라틴팝'],
+  'R&B·소울':['R&B','소울','네오소울','펑크','모던 R&B','컨템포러리 소울','블루아이드 소울','뉴잭스윙','퀴어팝'],
+  '힙합 계열':['올드스쿨 힙합','붐뱁','트랩','로파이 힙합','드릴','클라우드 랩','콘셔스 랩','크런크','멈블 랩','케이팝 힙합'],
+  '클래식·오케스트라':['바로크','고전주의','낭만주의','현대 클래식','미니멀리즘','챔버 뮤직','현악 사중주','오페라','심포니','협주곡'],
+  '일렉트로닉·댄스':['EDM','하우스','딥 하우스','테크노','트랜스','드럼앤베이스','덥스텝','퓨처 베이스','앰비언트','칠아웃','로파이','신스웨이브','다크웨이브','보코더','뉴에이지','IDM'],
+  '월드뮤직·민속':['보사노바','레게','삼바','플라멩코','켈틱','아프리카 리듬','중동 음악','인도 음악','라틴','컨트리','블루스','포크'],
+  '발라드·어쿠스틱':['팝 발라드','어쿠스틱','CCM 발라드','재즈 발라드','오케스트라 발라드','싱어송라이터','포크 발라드','피아노 발라드','소프트 팝'],
+  '한국 고유장르':['트로트','뽕짝','판소리','국악','가요','CCM','찬송가','창작 국악','퓨전 국악','K-POP 아이돌'],
+  '기타 특수장르':['OST·사운드트랙','게임 뮤직','재즈 퓨전','크로스오버','스포큰 워드','ASMR','네이처 사운드','어린이 음악','찬양·워십','뮤지컬']
+};
+
+let selectedGenre = '';
+let selectedSubGenre = '';
+let selectedLang = '한국어';
+
+function selectGenre(name, emoji, btn) {
+  selectedGenre = name;
+  selectedSubGenre = '';
+  document.querySelectorAll('.genre-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const card = document.getElementById('subGenreCard');
+  const label = document.getElementById('subGenreLabel');
+  const wrap = document.getElementById('subGenreWrap');
+
+  const subs = SUB_GENRES[name] || [];
+  label.textContent = emoji + ' ' + name;
+  wrap.innerHTML = subs.map(s =>
+    `<button class="sub-chip" onclick="selectSub('${s}',this)">${s}</button>`
+  ).join('');
+  card.style.display = 'block';
+  card.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function selectSub(name, btn) {
+  selectedSubGenre = name;
+  document.querySelectorAll('.sub-chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function toggleMood(btn) {
+  btn.classList.toggle('active');
+}
+
+function selectLang(lang, btn) {
+  selectedLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function makeMusic() {
+  if (!apiKey) { alert('API 키를 먼저 저장해주세요.'); return; }
+  if (!selectedGenre) { alert('장르를 먼저 선택해주세요.'); return; }
+  const topic = document.getElementById('lyricsTopic').value.trim();
+  if (!topic) { alert('가사 주제를 입력해주세요.'); return; }
+
+  const moods = [...document.querySelectorAll('.mood-chip.active')].map(b=>b.textContent).join(', ');
+  const genreInfo = selectedSubGenre ? `${selectedGenre} > ${selectedSubGenre}` : selectedGenre;
+
+  const btn = document.getElementById('makeBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> 생성 중... (프롬프트 + 가사 동시 생성)';
+
+  try {
+    const system = `당신은 AI 음악 창작 전문가입니다. Suno AI 프롬프트와 가사를 동시에 생성합니다.
+반드시 아래 JSON 형식으로만 응답하세요 (마크다운 코드블록 없이 순수 JSON):
+{
+  "prompt": "Suno AI에 입력할 영문 프롬프트 (장르, 분위기, 악기, BPM 등 포함, 100자 이내)",
+  "lyrics": "완성된 가사 전체 (절/브릿지/코러스 구조 포함)"
+}`;
+
+    const userMsg = `장르: ${genreInfo}
+가사 주제: ${topic}
+분위기: ${moods || '없음'}
+가사 언어: ${selectedLang}
+
+위 정보를 바탕으로 Suno AI 프롬프트와 완성된 가사를 생성해주세요.`;
+
+    const raw = await callClaude(system, userMsg, 2000);
+    const json = JSON.parse(raw.replace(/```json|```/g,'').trim());
+
+    document.getElementById('promptText').textContent = json.prompt || '';
+    document.getElementById('lyricsText').textContent = json.lyrics || '';
+    const resultEl = document.getElementById('promptResult');
+    resultEl.style.display = 'flex';
+    resultEl.scrollIntoView({ behavior:'smooth', block:'start' });
+
+  } catch(e) {
+    alert('생성 오류: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🎵 음악 만들기 (프롬프트 + 가사 동시 생성)';
+  }
+}
+
+/* ── 공통 복사 함수 (모바일 폴백 포함) ── */
+function copyText(text, btn, successMsg) {
+  const done = () => {
+    if (!btn) return;
+    const orig = btn.textContent;
+    btn.textContent = successMsg || '✓ 복사됨';
+    setTimeout(() => btn.textContent = orig, 2000);
+  };
+
+  // 1차: Clipboard API
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, btn, successMsg));
+  } else {
+    fallbackCopy(text, btn, successMsg);
+  }
+}
+
+function fallbackCopy(text, btn, successMsg) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length); // iOS 대응
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (ok && btn) {
+      const orig = btn.textContent;
+      btn.textContent = successMsg || '✓ 복사됨';
+      setTimeout(() => btn.textContent = orig, 2000);
+    }
+  } catch(e) {
+    // 마지막 수단: 선택 상태 유지 안내
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;bottom:20px;left:10px;right:10px;height:80px;z-index:9999;font-size:13px;padding:8px;';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
+    setTimeout(() => document.body.removeChild(ta), 4000);
+  }
+}
+
+function copySection(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const text = el.textContent;
+  const btns = document.querySelectorAll('.copy-small');
+  let targetBtn = null;
+  btns.forEach(b => { if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(id)) targetBtn = b; });
+  copyText(text, targetBtn);
+}
+
+function copyTs() {
+  const text = document.getElementById('tsText').textContent;
+  const btn = document.querySelector('.copy-btn');
+  copyText(text, btn);
+}
+
+async function copyCovPrompt() {
+  const text = document.getElementById('covDallePrompt').textContent;
+  const btn = document.querySelector('.cov-copy-main');
+  copyText(text, btn, '✓ 복사됨! 붙여넣기 하세요');
+  const msg = document.getElementById('covCopiedMsg');
+  if (msg) { msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 3000); }
+}
+
+</script>
+</body>
+</html>
