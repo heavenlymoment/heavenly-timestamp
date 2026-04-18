@@ -6,23 +6,16 @@
 <title>헤븐리 유튜브 타임스탬프 생성기</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: #0d0f14;
-  color: #e8eaf0;
-  font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-  min-height: 100vh;
-  padding: 20px 16px 60px;
-}
-.header { text-align: center; padding: 32px 0 24px; border-bottom: 1px solid #2a3045; margin-bottom: 24px; }
-.badge { display: inline-block; font-size: 11px; letter-spacing: 2px; color: #c8a96e; background: rgba(200,169,110,0.12); border: 1px solid rgba(200,169,110,0.3); padding: 4px 14px; border-radius: 20px; margin-bottom: 12px; }
-.logo-line { font-size: 12px; color: #7a8299; letter-spacing: 3px; margin-bottom: 6px; }
-h1 { font-size: 26px; font-weight: 700; line-height: 1.35; margin-bottom: 8px; }
-h1 span { color: #c8a96e; }
-.sub { font-size: 12px; color: #7a8299; }
-.hdiv { display: flex; align-items: center; gap: 8px; max-width: 200px; margin: 14px auto 0; }
+body { background:#0d0f14; color:#e8eaf0; font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; min-height:100vh; padding:20px 16px 60px; }
+.header { text-align:center; padding:32px 0 24px; border-bottom:1px solid #2a3045; margin-bottom:24px; }
+.badge { display:inline-block; font-size:11px; letter-spacing:2px; color:#c8a96e; background:rgba(200,169,110,0.12); border:1px solid rgba(200,169,110,0.3); padding:4px 14px; border-radius:20px; margin-bottom:12px; }
+.logo-line { font-size:12px; color:#7a8299; letter-spacing:3px; margin-bottom:6px; }
+h1 { font-size:26px; font-weight:700; line-height:1.35; margin-bottom:8px; }
+h1 span { color:#c8a96e; }
+.sub { font-size:12px; color:#7a8299; }
+.hdiv { display:flex; align-items:center; gap:8px; max-width:200px; margin:14px auto 0; }
 .hdiv-line { flex:1; height:1px; background:#2a3045; }
 .hdiv-dot { color:#c8a96e; font-size:10px; }
-
 .api-box { background:#161921; border:1px solid #2a3045; border-radius:12px; padding:14px 16px; margin-bottom:18px; }
 .api-lbl { font-size:12px; color:#c8a96e; margin-bottom:8px; }
 .api-row { display:flex; gap:8px; }
@@ -31,25 +24,21 @@ h1 span { color: #c8a96e; }
 .btn-s { background:rgba(200,169,110,0.15); border:1px solid rgba(200,169,110,0.4); color:#c8a96e; padding:9px 14px; border-radius:8px; cursor:pointer; font-size:13px; white-space:nowrap; font-family:inherit; }
 .api-st { font-size:12px; color:#7a8299; margin-top:8px; font-family:monospace; }
 .api-st.ok { color:#6bc49a; }
-
 .card { background:#161921; border:1px solid #2a3045; border-radius:12px; padding:18px 16px; margin-bottom:14px; }
 .slabel { display:flex; align-items:center; gap:9px; margin-bottom:12px; }
 .snum { width:23px; height:23px; border-radius:50%; background:rgba(200,169,110,0.15); border:1px solid rgba(200,169,110,0.4); color:#c8a96e; font-size:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 .stitle { font-size:14px; font-weight:700; }
-
 .upzone { border:2px dashed #2a3045; border-radius:10px; padding:28px 16px; text-align:center; cursor:pointer; position:relative; transition:border-color 0.2s; }
 .upzone:hover { border-color:#c8a96e; }
 .upzone input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
 .up-icon { font-size:28px; margin-bottom:6px; }
 .up-txt { font-size:13px; margin-bottom:3px; }
 .up-sub { font-size:11px; color:#7a8299; }
-
 .finfo { display:none; align-items:center; gap:10px; padding:10px 12px; background:#1e2330; border-radius:9px; margin-top:10px; }
 .finfo.show { display:flex; }
 .fname { font-size:13px; font-weight:600; }
 .fmeta { font-size:11px; color:#7a8299; margin-top:2px; font-family:monospace; }
 audio { width:100%; margin-top:10px; border-radius:8px; }
-
 .rgrid { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:14px; }
 .rcell { background:#1e2330; border:1px solid #2a3045; border-radius:9px; padding:11px; text-align:center; }
 .rcell.full { grid-column:1/-1; }
@@ -60,25 +49,20 @@ audio { width:100%; margin-top:10px; border-radius:8px; }
 .bm { font-size:11px; padding:3px 10px; border-radius:20px; background:rgba(200,169,110,0.2); border:1px solid rgba(200,169,110,0.5); color:#c8a96e; }
 .bs { font-size:11px; padding:3px 10px; border-radius:20px; background:rgba(126,184,212,0.1); border:1px solid rgba(126,184,212,0.3); color:#7eb8d4; }
 .adesc { margin-top:12px; padding:10px 12px; background:rgba(155,127,212,0.06); border-left:3px solid #9b7fd4; border-radius:0 7px 7px 0; font-size:12px; line-height:1.7; color:#a0a8c0; }
-
 textarea { width:100%; min-height:160px; background:#1e2330; border:1px solid #2a3045; border-radius:9px; padding:11px 12px; color:#e8eaf0; font-family:inherit; font-size:13px; line-height:1.8; resize:vertical; outline:none; }
 textarea:focus { border-color:#9b7fd4; }
 textarea::placeholder { color:#7a8299; }
 .hint { margin-top:7px; font-size:11px; color:#7a8299; line-height:1.6; }
-
 .btn-gen { display:block; width:100%; padding:15px; background:linear-gradient(135deg,rgba(200,169,110,0.18),rgba(155,127,212,0.18)); border:1px solid rgba(200,169,110,0.5); border-radius:11px; color:#c8a96e; font-size:15px; font-weight:700; cursor:pointer; margin-top:14px; font-family:inherit; transition:all 0.2s; letter-spacing:1px; }
 .btn-gen:hover:not(:disabled) { background:linear-gradient(135deg,rgba(200,169,110,0.28),rgba(155,127,212,0.28)); }
 .btn-gen:disabled { opacity:0.4; cursor:not-allowed; }
-
 .loading { display:none; text-align:center; padding:14px 0; color:#7a8299; font-size:13px; }
 .loading.show { display:block; }
 .lbar { height:3px; background:#2a3045; border-radius:2px; margin:8px 0; overflow:hidden; }
 .lfill { height:100%; width:30%; background:linear-gradient(90deg,#c8a96e,#9b7fd4); border-radius:2px; animation:slide 1.4s ease-in-out infinite; }
 @keyframes slide { 0%{transform:translateX(-100%)} 100%{transform:translateX(400%)} }
-
 .err { display:none; padding:11px 12px; background:rgba(220,80,80,0.1); border:1px solid rgba(220,80,80,0.3); border-radius:8px; color:#e07070; font-size:12px; margin-top:10px; white-space:pre-wrap; }
 .err.show { display:block; }
-
 .rwrap { display:none; }
 .rwrap.show { display:block; }
 .divider { height:1px; background:#2a3045; margin:22px 0; }
@@ -90,13 +74,11 @@ textarea::placeholder { color:#7a8299; }
 .tsbody { flex:1; }
 .tsname { font-size:13px; font-weight:700; margin-bottom:2px; }
 .tsdesc { font-size:11px; color:#7a8299; line-height:1.5; }
-
 .clbl2 { font-size:10px; color:#7a8299; font-family:monospace; letter-spacing:1px; text-transform:uppercase; margin:14px 0 7px; }
 .carea { background:#0d0f14; border:1px solid #2a3045; border-radius:9px; padding:12px; font-family:monospace; font-size:12px; line-height:1.9; color:#a0a8c0; white-space:pre-wrap; word-break:break-all; }
 .btn-cp { display:inline-flex; align-items:center; gap:5px; margin-top:9px; padding:9px 16px; background:rgba(107,196,154,0.1); border:1px solid rgba(107,196,154,0.4); border-radius:8px; color:#6bc49a; cursor:pointer; font-size:12px; font-family:inherit; }
 .btn-cp:hover { background:rgba(107,196,154,0.2); }
 .nota { font-size:11px; color:#7a8299; margin-top:10px; padding:9px 11px; background:rgba(155,127,212,0.06); border-radius:8px; line-height:1.6; }
-
 .footer { text-align:center; margin-top:44px; padding-top:20px; border-top:1px solid #2a3045; color:#4a5268; font-size:11px; letter-spacing:1px; }
 .footer span { color:#c8a96e; }
 </style>
@@ -184,6 +166,7 @@ textarea::placeholder { color:#7a8299; }
 
 <script>
 var dur=0, cache=null;
+var API_URL='https://api.anthropic.com/v1/messages';
 
 function saveKey(){
   var k=document.getElementById('apiKey').value.trim();
@@ -223,32 +206,81 @@ function doFile(f){
   p.onloadedmetadata=function(){
     dur=p.duration;
     document.getElementById('fm').textContent=fmtB(f.size)+' · '+fmt(dur);
-    if(f.size<=10*1024*1024) analyzeAudio(f);
-    else showBasic();
+    analyzeAudio(f.name);
   };
 }
 
-async function analyzeAudio(f){
+/* Anthropic 직접 호출 공통 함수 */
+async function callClaude(systemPrompt, userPrompt) {
+  var key = getKey();
+  if (!key) throw new Error('API 키를 먼저 입력해주세요.');
+
+  var body = {
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 1024,
+    messages: [{ role: 'user', content: userPrompt }]
+  };
+  if (systemPrompt) body.system = systemPrompt;
+
+  var resp = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify(body)
+  });
+
+  var rawText = await resp.text();
+
+  if (!resp.ok) {
+    var errMsg = 'API 오류 (' + resp.status + ')';
+    try { errMsg = JSON.parse(rawText).error.message || errMsg; } catch(_){}
+    throw new Error(errMsg);
+  }
+
+  var data;
+  try { data = JSON.parse(rawText); } catch(e) { throw new Error('응답 파싱 실패: ' + rawText.slice(0,100)); }
+
+  var text = (data.content && data.content[0] && data.content[0].text) || '';
+  if (!text) throw new Error('빈 응답이 반환되었습니다.');
+  return text;
+}
+
+/* JSON 안전 파싱 */
+function safeParseJSON(text) {
+  var clean = text.trim();
+  // 코드블록 제거
+  var m = clean.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (m) clean = m[1].trim();
+  // 순수 JSON 시도
+  try { return JSON.parse(clean); } catch(_){}
+  // 중괄호 추출 시도
+  var om = clean.match(/\{[\s\S]*\}/);
+  if (om) { try { return JSON.parse(om[0]); } catch(_){} }
+  throw new Error('JSON 파싱 실패: ' + clean.slice(0,200));
+}
+
+async function analyzeAudio(filename){
   var key=getKey();
   document.getElementById('ab').style.display='block';
   document.getElementById('rdesc').textContent='🔍 헤븐리 AI 장르 분석 중...';
   if(!key){showBasic();return;}
+
   try{
-    var resp=await fetch('/api/analyze',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({filename:f.name,duration:fmt(dur),apiKey:key})
-    });
-    var d=await resp.json();
-    if(d.error){showBasic();return;}
-    var j=d;
+    var system='음악 분석 전문가. 반드시 순수 JSON만 반환. 마크다운 없이.\n형식: {"mainGenre":"주장르","subGenres":["세부1","세부2"],"bpm":"약 XXX BPM","key":"XX장조/단조","chordProgression":"코드진행","harmonyFeature":"화성특징","description":"곡 분위기 2-3문장"}';
+    var user='파일명: '+filename+'\n길이: '+fmt(dur)+'\n이 파일명을 참고해 장르·BPM·조성·화성 구조를 추정해주세요.';
+    var text=await callClaude(system, user);
+    var j=safeParseJSON(text);
     cache=j;
     document.getElementById('rd').textContent=fmt(dur);
     document.getElementById('rb').textContent=j.bpm||'—';
     document.getElementById('rg').innerHTML='<span class="bm">'+j.mainGenre+'</span>'+(j.subGenres||[]).map(function(s){return '<span class="bs">'+s+'</span>';}).join('');
     document.getElementById('rh').textContent=[j.key,j.chordProgression,j.harmonyFeature].filter(Boolean).join(' · ');
     document.getElementById('rdesc').textContent=j.description||'';
-  }catch(e){showBasic();}
+  }catch(e){ showBasic(); }
 }
 
 function showBasic(){
@@ -266,19 +298,17 @@ async function gen(){
   var lyr=document.getElementById('lyr').value.trim();
   if(!lyr){showErr('가사를 입력해주세요.');return;}
   hideErr(); setLoad(true);
+
+  var durTxt=dur?'음악 총 길이: '+fmt(dur)+' ('+Math.floor(dur)+'초)':'음악 길이: 알 수 없음 (3-4분 기준 추정)';
+  var genreTxt=cache?'장르: '+cache.mainGenre+', 세부: '+(cache.subGenres||[]).join(', '):'';
+  var bpmTxt=cache&&cache.bpm?'BPM: '+cache.bpm:'';
+
+  var prompt='음악 타임스탬프 전문가입니다.\n\n음원 정보:\n- '+durTxt+'\n'+(genreTxt?'- '+genreTxt+'\n':'')+(bpmTxt?'- '+bpmTxt+'\n':'')+'\n가사:\n'+lyr+'\n\n가사를 분석해서 유튜브 타임스탬프를 생성하세요.\n\n규칙:\n1. 인트로, 1절, 2절, 코러스, 브릿지, 아웃트로 등 구간 파악\n2. 음악 길이와 BPM 고려해 각 구간 시작 시간을 MM:SS로 추정\n3. 일반 구조: 인트로 10-15초, 절 30-45초, 코러스 20-30초\n4. [1절],[코러스] 같은 태그 있으면 우선 사용\n5. 반드시 순수 JSON만 반환. 마크다운 없이.\n\n형식:\n{"timestamps":[{"time":"0:00","section":"인트로","icon":"🎵","desc":"설명"},{"time":"0:15","section":"1절","icon":"🎤","desc":"첫 가사"}],"youtubeText":"0:00 인트로\\n0:15 1절","analysisNote":"구조 분석 메모"}';
+
   try{
-    var body={lyrics:lyr,apiKey:key};
-    if(dur) body.duration=fmt(dur);
-    if(dur) body.durationSec=Math.floor(dur);
-    if(cache){body.genre=cache.mainGenre;body.subGenres=(cache.subGenres||[]).join(', ');body.bpm=cache.bpm||'';}
-    var resp=await fetch('/api/timestamp',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(body)
-    });
-    var d=await resp.json();
-    if(d.error){showErr('오류: '+d.error);setLoad(false);return;}
-    showResult(d);
+    var text=await callClaude(null, prompt);
+    var j=safeParseJSON(text);
+    showResult(j);
   }catch(e){
     showErr('생성 실패: '+e.message);
   }
@@ -286,10 +316,10 @@ async function gen(){
 }
 
 function showResult(j){
-  document.getElementById('tv').innerHTML=j.timestamps.map(function(t){
-    return '<div class="tsline"><div class="tsicon">'+t.icon+'</div><div class="tstime">'+t.time+'</div><div class="tsbody"><div class="tsname">'+t.section+'</div><div class="tsdesc">'+t.desc+'</div></div></div>';
+  document.getElementById('tv').innerHTML=(j.timestamps||[]).map(function(t){
+    return '<div class="tsline"><div class="tsicon">'+(t.icon||'🎵')+'</div><div class="tstime">'+t.time+'</div><div class="tsbody"><div class="tsname">'+t.section+'</div><div class="tsdesc">'+(t.desc||'')+'</div></div></div>';
   }).join('');
-  document.getElementById('ca').textContent=j.youtubeText||j.timestamps.map(function(t){return t.time+' '+t.section;}).join('\n');
+  document.getElementById('ca').textContent=j.youtubeText||(j.timestamps||[]).map(function(t){return t.time+' '+t.section;}).join('\n');
   var na=document.getElementById('na');
   if(j.analysisNote){na.textContent='💡 '+j.analysisNote;na.style.display='block';}
   else{na.style.display='none';}
