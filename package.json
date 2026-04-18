@@ -1,0 +1,6 @@
+{
+  "name": "heavenly-timestamp",
+  "version": "1.0.0",
+  "description": "헤븐리 유튜브 타임스탬프 생성기",
+  "private": true
+}

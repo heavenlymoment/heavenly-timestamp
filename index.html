@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>헤븐리 유튜브 타임스탬프 생성기</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #0d0f14;
+  color: #e8eaf0;
+  font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  min-height: 100vh;
+  padding: 20px 16px 60px;
+}
+.header { text-align: center; padding: 32px 0 24px; border-bottom: 1px solid #2a3045; margin-bottom: 24px; }
+.badge { display: inline-block; font-size: 11px; letter-spacing: 2px; color: #c8a96e; background: rgba(200,169,110,0.12); border: 1px solid rgba(200,169,110,0.3); padding: 4px 14px; border-radius: 20px; margin-bottom: 12px; }
+.logo-line { font-size: 12px; color: #7a8299; letter-spacing: 3px; margin-bottom: 6px; }
+h1 { font-size: 26px; font-weight: 700; line-height: 1.35; margin-bottom: 8px; }
+h1 span { color: #c8a96e; }
+.sub { font-size: 12px; color: #7a8299; }
+.hdiv { display: flex; align-items: center; gap: 8px; max-width: 200px; margin: 14px auto 0; }
+.hdiv-line { flex:1; height:1px; background:#2a3045; }
+.hdiv-dot { color:#c8a96e; font-size:10px; }
+
+.api-box { background:#161921; border:1px solid #2a3045; border-radius:12px; padding:14px 16px; margin-bottom:18px; }
+.api-lbl { font-size:12px; color:#c8a96e; margin-bottom:8px; }
+.api-row { display:flex; gap:8px; }
+.api-row input { flex:1; background:#1e2330; border:1px solid #2a3045; border-radius:8px; padding:9px 12px; color:#e8eaf0; font-size:13px; outline:none; font-family:monospace; }
+.api-row input:focus { border-color:#c8a96e; }
+.btn-s { background:rgba(200,169,110,0.15); border:1px solid rgba(200,169,110,0.4); color:#c8a96e; padding:9px 14px; border-radius:8px; cursor:pointer; font-size:13px; white-space:nowrap; font-family:inherit; }
+.api-st { font-size:12px; color:#7a8299; margin-top:8px; font-family:monospace; }
+.api-st.ok { color:#6bc49a; }
+
+.card { background:#161921; border:1px solid #2a3045; border-radius:12px; padding:18px 16px; margin-bottom:14px; }
+.slabel { display:flex; align-items:center; gap:9px; margin-bottom:12px; }
+.snum { width:23px; height:23px; border-radius:50%; background:rgba(200,169,110,0.15); border:1px solid rgba(200,169,110,0.4); color:#c8a96e; font-size:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.stitle { font-size:14px; font-weight:700; }
+
+.upzone { border:2px dashed #2a3045; border-radius:10px; padding:28px 16px; text-align:center; cursor:pointer; position:relative; transition:border-color 0.2s; }
+.upzone:hover { border-color:#c8a96e; }
+.upzone input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.up-icon { font-size:28px; margin-bottom:6px; }
+.up-txt { font-size:13px; margin-bottom:3px; }
+.up-sub { font-size:11px; color:#7a8299; }
+
+.finfo { display:none; align-items:center; gap:10px; padding:10px 12px; background:#1e2330; border-radius:9px; margin-top:10px; }
+.finfo.show { display:flex; }
+.fname { font-size:13px; font-weight:600; }
+.fmeta { font-size:11px; color:#7a8299; margin-top:2px; font-family:monospace; }
+audio { width:100%; margin-top:10px; border-radius:8px; }
+
+.rgrid { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:14px; }
+.rcell { background:#1e2330; border:1px solid #2a3045; border-radius:9px; padding:11px; text-align:center; }
+.rcell.full { grid-column:1/-1; }
+.clbl { font-size:10px; color:#7a8299; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; font-family:monospace; }
+.cval { font-size:19px; font-weight:700; color:#c8a96e; line-height:1.3; }
+.cval.sm { font-size:12px; color:#7eb8d4; }
+.gbadges { display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-top:3px; }
+.bm { font-size:11px; padding:3px 10px; border-radius:20px; background:rgba(200,169,110,0.2); border:1px solid rgba(200,169,110,0.5); color:#c8a96e; }
+.bs { font-size:11px; padding:3px 10px; border-radius:20px; background:rgba(126,184,212,0.1); border:1px solid rgba(126,184,212,0.3); color:#7eb8d4; }
+.adesc { margin-top:12px; padding:10px 12px; background:rgba(155,127,212,0.06); border-left:3px solid #9b7fd4; border-radius:0 7px 7px 0; font-size:12px; line-height:1.7; color:#a0a8c0; }
+
+textarea { width:100%; min-height:160px; background:#1e2330; border:1px solid #2a3045; border-radius:9px; padding:11px 12px; color:#e8eaf0; font-family:inherit; font-size:13px; line-height:1.8; resize:vertical; outline:none; }
+textarea:focus { border-color:#9b7fd4; }
+textarea::placeholder { color:#7a8299; }
+.hint { margin-top:7px; font-size:11px; color:#7a8299; line-height:1.6; }
+
+.btn-gen { display:block; width:100%; padding:15px; background:linear-gradient(135deg,rgba(200,169,110,0.18),rgba(155,127,212,0.18)); border:1px solid rgba(200,169,110,0.5); border-radius:11px; color:#c8a96e; font-size:15px; font-weight:700; cursor:pointer; margin-top:14px; font-family:inherit; transition:all 0.2s; letter-spacing:1px; }
+.btn-gen:hover:not(:disabled) { background:linear-gradient(135deg,rgba(200,169,110,0.28),rgba(155,127,212,0.28)); }
+.btn-gen:disabled { opacity:0.4; cursor:not-allowed; }
+
+.loading { display:none; text-align:center; padding:14px 0; color:#7a8299; font-size:13px; }
+.loading.show { display:block; }
+.lbar { height:3px; background:#2a3045; border-radius:2px; margin:8px 0; overflow:hidden; }
+.lfill { height:100%; width:30%; background:linear-gradient(90deg,#c8a96e,#9b7fd4); border-radius:2px; animation:slide 1.4s ease-in-out infinite; }
+@keyframes slide { 0%{transform:translateX(-100%)} 100%{transform:translateX(400%)} }
+
+.err { display:none; padding:11px 12px; background:rgba(220,80,80,0.1); border:1px solid rgba(220,80,80,0.3); border-radius:8px; color:#e07070; font-size:12px; margin-top:10px; white-space:pre-wrap; }
+.err.show { display:block; }
+
+.rwrap { display:none; }
+.rwrap.show { display:block; }
+.divider { height:1px; background:#2a3045; margin:22px 0; }
+.tsbox { background:#1e2330; border:1px solid #2a3045; border-radius:9px; padding:14px; }
+.tsline { display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+.tsline:last-child { border-bottom:none; }
+.tsicon { font-size:16px; min-width:20px; text-align:center; }
+.tstime { font-family:monospace; font-size:13px; color:#c8a96e; font-weight:600; min-width:46px; padding-top:1px; }
+.tsbody { flex:1; }
+.tsname { font-size:13px; font-weight:700; margin-bottom:2px; }
+.tsdesc { font-size:11px; color:#7a8299; line-height:1.5; }
+
+.clbl2 { font-size:10px; color:#7a8299; font-family:monospace; letter-spacing:1px; text-transform:uppercase; margin:14px 0 7px; }
+.carea { background:#0d0f14; border:1px solid #2a3045; border-radius:9px; padding:12px; font-family:monospace; font-size:12px; line-height:1.9; color:#a0a8c0; white-space:pre-wrap; word-break:break-all; }
+.btn-cp { display:inline-flex; align-items:center; gap:5px; margin-top:9px; padding:9px 16px; background:rgba(107,196,154,0.1); border:1px solid rgba(107,196,154,0.4); border-radius:8px; color:#6bc49a; cursor:pointer; font-size:12px; font-family:inherit; }
+.btn-cp:hover { background:rgba(107,196,154,0.2); }
+.nota { font-size:11px; color:#7a8299; margin-top:10px; padding:9px 11px; background:rgba(155,127,212,0.06); border-radius:8px; line-height:1.6; }
+
+.footer { text-align:center; margin-top:44px; padding-top:20px; border-top:1px solid #2a3045; color:#4a5268; font-size:11px; letter-spacing:1px; }
+.footer span { color:#c8a96e; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="badge">🎵 YouTube Timestamp Generator</div>
+  <div class="logo-line">HEAVENLY · 헤븐리</div>
+  <h1>헤븐리 <span>유튜브</span><br>타임스탬프 생성기</h1>
+  <div class="sub">음원 분석 × 가사 매핑 × AI 자동 타임스탬프</div>
+  <div class="hdiv"><div class="hdiv-line"></div><div class="hdiv-dot">✦</div><div class="hdiv-line"></div></div>
+</div>
+
+<div class="api-box">
+  <div class="api-lbl">🔑 Anthropic API KEY</div>
+  <div class="api-row">
+    <input type="password" id="apiKey" placeholder="sk-ant-api03-..." />
+    <button class="btn-s" onclick="saveKey()">저장</button>
+  </div>
+  <div class="api-st" id="apiSt">⚠ API 키를 입력하세요 (console.anthropic.com → API Keys)</div>
+</div>
+
+<div class="card">
+  <div class="slabel"><div class="snum">①</div><div class="stitle">음원 파일 업로드</div></div>
+  <div class="upzone" id="dz">
+    <input type="file" id="af" accept="audio/*" onchange="onF(event)" />
+    <div class="up-icon">🎧</div>
+    <div class="up-txt">클릭하거나 파일을 드래그하세요</div>
+    <div class="up-sub">MP3 · WAV · OGG · FLAC · AAC · M4A</div>
+  </div>
+  <div class="finfo" id="fi">
+    <div style="font-size:24px">🎵</div>
+    <div><div class="fname" id="fn"></div><div class="fmeta" id="fm"></div></div>
+  </div>
+  <audio id="pl" controls style="display:none;margin-top:10px;width:100%;"></audio>
+  <div id="ab" style="display:none;">
+    <div class="rgrid">
+      <div class="rcell"><div class="clbl">음악 길이</div><div class="cval" id="rd">—</div></div>
+      <div class="rcell"><div class="clbl">BPM</div><div class="cval" id="rb">—</div></div>
+      <div class="rcell full"><div class="clbl">장르 분석</div><div class="gbadges" id="rg"></div></div>
+      <div class="rcell full"><div class="clbl">화성 · 조성</div><div class="cval sm" id="rh">—</div></div>
+    </div>
+    <div class="adesc" id="rdesc"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slabel"><div class="snum">②</div><div class="stitle">가사 입력</div></div>
+  <textarea id="lyr" placeholder="여기에 가사를 붙여넣으세요.
+
+[1절]
+...가사...
+
+[코러스]
+...가사...
+
+[2절]
+...가사...
+
+[브릿지]
+...가사...
+
+구조 태그([1절], [코러스], [브릿지] 등)가 있으면 더 정확합니다."></textarea>
+  <div class="hint">💡 음원 파일 없이 가사만 입력해도 타임스탬프를 생성할 수 있어요 (길이 추정 기반)</div>
+</div>
+
+<button class="btn-gen" id="gb" onclick="gen()">✦ 헤븐리 타임스탬프 생성하기</button>
+<div class="loading" id="ld"><div>헤븐리 AI가 가사와 음원을 분석하고 있습니다...</div><div class="lbar"><div class="lfill"></div></div></div>
+<div class="err" id="er"></div>
+
+<div class="rwrap" id="rw">
+  <div class="divider"></div>
+  <div class="card">
+    <div class="slabel"><div class="snum">③</div><div class="stitle">타임스탬프 결과</div></div>
+    <div class="tsbox" id="tv"></div>
+    <div class="clbl2">유튜브 설명란 / 댓글용 텍스트</div>
+    <div class="carea" id="ca"></div>
+    <button class="btn-cp" onclick="doCp()">📋 복사하기</button>
+    <div class="nota" id="na" style="display:none;"></div>
+  </div>
+</div>
+
+<div class="footer"><span>헤븐리 Heavenly</span> · AI 유튜브 타임스탬프 생성기</div>
+
+<script>
+var dur=0, cache=null;
+
+function saveKey(){
+  var k=document.getElementById('apiKey').value.trim();
+  if(!k)return;
+  localStorage.setItem('hv_key',k);
+  setSt('✓ API 키 저장됨',true);
+}
+function getKey(){ return document.getElementById('apiKey').value.trim()||localStorage.getItem('hv_key')||''; }
+function setSt(m,ok){ var e=document.getElementById('apiSt'); e.textContent=m; e.className=ok?'api-st ok':'api-st'; }
+
+window.onload=function(){
+  var k=localStorage.getItem('hv_key');
+  if(k){document.getElementById('apiKey').value=k; setSt('✓ 저장된 API 키 있음',true);}
+  var dz=document.getElementById('dz');
+  dz.addEventListener('dragover',function(e){e.preventDefault();dz.style.borderColor='#c8a96e';});
+  dz.addEventListener('dragleave',function(){dz.style.borderColor='#2a3045';});
+  dz.addEventListener('drop',function(e){
+    e.preventDefault(); dz.style.borderColor='#2a3045';
+    var f=e.dataTransfer.files[0];
+    if(f&&f.type.startsWith('audio/'))doFile(f);
+  });
+};
+
+function onF(e){var f=e.target.files[0];if(f)doFile(f);}
+
+function fmt(s){var m=Math.floor(s/60),sc=Math.floor(s%60);return m+':'+(sc<10?'0':'')+sc;}
+function fmtB(b){return b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB';}
+
+function doFile(f){
+  cache=null;
+  document.getElementById('fi').className='finfo show';
+  document.getElementById('fn').textContent=f.name;
+  document.getElementById('fm').textContent=fmtB(f.size)+' · 분석 중...';
+  var url=URL.createObjectURL(f);
+  var p=document.getElementById('pl');
+  p.src=url; p.style.display='block';
+  p.onloadedmetadata=function(){
+    dur=p.duration;
+    document.getElementById('fm').textContent=fmtB(f.size)+' · '+fmt(dur);
+    if(f.size<=10*1024*1024) analyzeAudio(f);
+    else showBasic();
+  };
+}
+
+async function analyzeAudio(f){
+  var key=getKey();
+  document.getElementById('ab').style.display='block';
+  document.getElementById('rdesc').textContent='🔍 헤븐리 AI 장르 분석 중...';
+  if(!key){showBasic();return;}
+  try{
+    var resp=await fetch('/api/analyze',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({filename:f.name,duration:fmt(dur),apiKey:key})
+    });
+    var d=await resp.json();
+    if(d.error){showBasic();return;}
+    var j=d;
+    cache=j;
+    document.getElementById('rd').textContent=fmt(dur);
+    document.getElementById('rb').textContent=j.bpm||'—';
+    document.getElementById('rg').innerHTML='<span class="bm">'+j.mainGenre+'</span>'+(j.subGenres||[]).map(function(s){return '<span class="bs">'+s+'</span>';}).join('');
+    document.getElementById('rh').textContent=[j.key,j.chordProgression,j.harmonyFeature].filter(Boolean).join(' · ');
+    document.getElementById('rdesc').textContent=j.description||'';
+  }catch(e){showBasic();}
+}
+
+function showBasic(){
+  document.getElementById('ab').style.display='block';
+  document.getElementById('rd').textContent=dur?fmt(dur):'—';
+  document.getElementById('rb').textContent='—';
+  document.getElementById('rg').innerHTML='<span class="bs">가사 입력 후 분석</span>';
+  document.getElementById('rh').textContent='타임스탬프 생성 가능';
+  document.getElementById('rdesc').textContent='가사를 입력하고 타임스탬프 생성 버튼을 눌러주세요.';
+}
+
+async function gen(){
+  var key=getKey();
+  if(!key){showErr('API 키를 먼저 입력하고 저장해주세요.');return;}
+  var lyr=document.getElementById('lyr').value.trim();
+  if(!lyr){showErr('가사를 입력해주세요.');return;}
+  hideErr(); setLoad(true);
+  try{
+    var body={lyrics:lyr,apiKey:key};
+    if(dur) body.duration=fmt(dur);
+    if(dur) body.durationSec=Math.floor(dur);
+    if(cache){body.genre=cache.mainGenre;body.subGenres=(cache.subGenres||[]).join(', ');body.bpm=cache.bpm||'';}
+    var resp=await fetch('/api/timestamp',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    var d=await resp.json();
+    if(d.error){showErr('오류: '+d.error);setLoad(false);return;}
+    showResult(d);
+  }catch(e){
+    showErr('생성 실패: '+e.message);
+  }
+  setLoad(false);
+}
+
+function showResult(j){
+  document.getElementById('tv').innerHTML=j.timestamps.map(function(t){
+    return '<div class="tsline"><div class="tsicon">'+t.icon+'</div><div class="tstime">'+t.time+'</div><div class="tsbody"><div class="tsname">'+t.section+'</div><div class="tsdesc">'+t.desc+'</div></div></div>';
+  }).join('');
+  document.getElementById('ca').textContent=j.youtubeText||j.timestamps.map(function(t){return t.time+' '+t.section;}).join('\n');
+  var na=document.getElementById('na');
+  if(j.analysisNote){na.textContent='💡 '+j.analysisNote;na.style.display='block';}
+  else{na.style.display='none';}
+  document.getElementById('rw').className='rwrap show';
+  setTimeout(function(){document.getElementById('rw').scrollIntoView({behavior:'smooth',block:'start'});},100);
+}
+
+function doCp(){
+  var txt=document.getElementById('ca').textContent;
+  navigator.clipboard.writeText(txt).then(function(){
+    var b=document.querySelector('.btn-cp');
+    b.textContent='✓ 복사 완료!';
+    setTimeout(function(){b.innerHTML='📋 복사하기';},2000);
+  });
+}
+function setLoad(on){document.getElementById('ld').className=on?'loading show':'loading';document.getElementById('gb').disabled=on;}
+function showErr(m){var e=document.getElementById('er');e.textContent=m;e.className='err show';}
+function hideErr(){document.getElementById('er').className='err';}
+</script>
+</body>
+</html>
